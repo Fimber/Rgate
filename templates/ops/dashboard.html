@@ -1,0 +1,34 @@
+{% extends "ops_base.html" %}
+{% block title %}HQ · ReGate{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Usage</h1>
+  <p class="muted">Schools billed, results published, and SMS sent across the platform.</p>
+</div>
+<div class="grid stats">
+  <div class="card"><div class="stat">{{ schools|length }}</div><div class="stat-label">Schools</div></div>
+  <div class="card"><div class="stat">{{ students }}</div><div class="stat-label">Students billed</div></div>
+  <div class="card"><div class="stat">{{ published }}</div><div class="stat-label">Results published</div></div>
+  <div class="card"><div class="stat">{{ sms }}</div><div class="stat-label">SMS sent</div></div>
+</div>
+<p style="margin:1.2rem 0"><a class="btn" href="{% url 'ops:school_new' %}">Create school</a></p>
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>School</th><th>Students</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for school in schools %}
+      <tr>
+        <td>{{ school.name }}<br><span class="muted">{{ school.get_ownership_display }} · <a href="/{{ school.slug }}/">regate.ng/{{ school.slug }}</a></span></td>
+        <td>{{ school.student_count }}</td>
+        <td>{{ school.get_status_display }}</td>
+        <td>
+          <form method="post" action="{% url 'ops:school_toggle' school.id %}">{% csrf_token %}
+            <button class="btn ghost small">{% if school.status == 'active' %}Suspend{% else %}Activate{% endif %}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

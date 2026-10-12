@@ -1,0 +1,22 @@
+{% load static %}
+<fieldset class="field">
+  <legend class="lbl">Result card</legend>
+  <div class="card-picker">
+    {% for key, label, blurb in card_templates %}
+    <label>
+      <input type="radio" name="result_template" value="{{ key }}" {% if current_school.result_template == key %}checked{% endif %}>
+      <img src="{% static 'img/report-cards/'|add:key|add:'.png' %}" alt="Example {{ label }} result card" loading="lazy" width="300" height="400">
+      <b>{{ label }}</b>
+      <span class="help">{{ blurb }} <a href="{% static 'img/report-cards/'|add:key|add:'.png' %}" target="_blank" rel="noopener">See full size</a></span>
+    </label>
+    {% endfor %}
+  </div>
+</fieldset>
+<input type="hidden" name="show_positions" value="0">
+<label class="check">
+  <input type="checkbox" name="show_positions" value="1" {% if current_school.show_positions %}checked{% endif %}>
+  Show positions on results
+  <span class="help">Untick to leave out class position and subject positions from result cards, PDFs and transcripts.
+    Positions are still worked out for staff on the broadsheet.
+    <a href="{% static 'img/report-cards/no-positions.png' %}" target="_blank" rel="noopener">Example without positions</a></span>
+</label>

@@ -1,0 +1,20 @@
+{% extends "staff_base.html" %}
+{% block title %}Progress{% endblock %}
+{% block content %}
+<h1>Who is late</h1>
+<p class="muted">Use this to chase teachers before the deadline.</p>
+{% for row in rows %}
+  <article class="card" style="margin-bottom:12px">
+    <h2>{{ row.class }} <span class="badge">{{ row.cycle.get_state_display }}</span></h2>
+    <p>
+      {% for s in row.subjects %}
+        <span class="badge {{ s.status }}">{{ s.subject.name }} · {{ s.status }}</span>
+      {% endfor %}
+    </p>
+    <a href="{% url 'results:review' row.class.id %}">Open class sheet</a>
+    · <a href="{% url 'results:broadsheet' row.class.id %}">Broadsheet</a>
+  </article>
+{% empty %}
+<p>No classes this term.</p>
+{% endfor %}
+{% endblock %}

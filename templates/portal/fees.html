@@ -1,0 +1,43 @@
+{% extends "staff_base.html" %}
+{% block title %}Fee status{% endblock %}
+{% block content %}
+<h1>Fee status</h1>
+<p class="muted">This is a status, not a ledger. Owing blocks the parent immediately. Clearing restores access immediately.</p>
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>Student</th><th>Status</th><th>Update</th></tr></thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td>{{ student.full_name }}<br><span class="muted">{{ student.admission_number }}</span></td>
+        <td>
+          {% with flag=student.fee_flag %}
+            {% if flag %}
+              <span class="badge {% if flag.status == 'owing' %}owing{% endif %}">{{ flag.get_status_display }}</span>
+              {% if flag.override_until %}<div class="help">Override until {{ flag.override_until }}</div>{% endif %}
+            {% else %}
+              <span class="muted">Not set</span>
+            {% endif %}
+          {% endwith %}
+        </td>
+        <td>
+          <form method="post" style="display:flex;gap:6px;flex-wrap:wrap">
+            {% csrf_token %}
+            <input type="hidden" name="student" value="{{ student.id }}">
+            <select name="status" aria-label="Fee status">
+              <option value="cleared">Cleared</option>
+              <option value="part">Part payment</option>
+              <option value="owing">Owing</option>
+            </select>
+            <input name="reason" placeholder="Note" maxlength="200" aria-label="Note">
+            <button class="btn dark small" name="action" value="set">Set</button>
+            <input name="hours" type="number" value="24" min="1" max="336" style="width:70px" aria-label="Hours of temporary access">
+            <button class="btn ghost small" name="action" value="override">Temp access</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

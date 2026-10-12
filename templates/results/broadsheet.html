@@ -1,0 +1,45 @@
+{% extends "staff_base.html" %}
+{% block title %}Broadsheet {{ school_class }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ school_class }} broadsheet</h1>
+  <p>
+    <a class="btn ghost small" href="?format=xlsx">Excel</a>
+    <a class="btn ghost small" href="?format=pdf">PDF</a>
+  </p>
+</div>
+<div class="card table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        {% for subject in subjects %}<th>{{ subject.name }}</th>{% endfor %}
+        <th>Tot</th><th>Avg</th><th>Pos</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for enrollment in enrollments %}
+        {% with result=None %}
+        <tr>
+          <td>{{ enrollment.student.full_name }}</td>
+          {% for sid, sheet in sheets.items %}
+            {% if sid == enrollment.id %}
+              {% for subject in subjects %}
+                <td>
+                  {% for sr in sheet.subject_results.all %}
+                    {% if sr.subject_id == subject.id %}{{ sr.total }}{% endif %}
+                  {% endfor %}
+                </td>
+              {% endfor %}
+              <td>{{ sheet.total_score }}</td>
+              <td>{{ sheet.average }}</td>
+              <td>{{ sheet.position_class }}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

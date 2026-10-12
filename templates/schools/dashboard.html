@@ -1,0 +1,35 @@
+{% extends "staff_base.html" %}
+{% block title %}Home · {{ current_school.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Overview</h1>
+  <p class="muted">{% if term %}{{ session.name }} {{ term.name }} term. Nothing leaves the school until it has been reviewed and approved.{% else %}Create a session in setup before scores can be entered.{% endif %}</p>
+</div>
+<div class="grid stats">
+  <div class="card"><div class="stat">{{ stats.students }}</div><div class="stat-label">Active students</div></div>
+  <div class="card"><div class="stat">{{ stats.staff }}</div><div class="stat-label">Staff</div></div>
+  <div class="card"><div class="stat">{{ stats.classes }}</div><div class="stat-label">Classes</div></div>
+  <div class="card"><div class="stat">{{ stats.published }}</div><div class="stat-label">Published results</div></div>
+</div>
+<h2 style="margin:22px 0 10px">Class progress</h2>
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>Class</th><th>Sheets in</th><th>Workflow</th><th></th></tr></thead>
+    <tbody>
+      {% for row in progress %}
+      <tr>
+        <td>{{ row.class }}</td>
+        <td>{{ row.submitted }}/{{ row.subjects }} submitted ({{ row.started }} started)</td>
+        <td><span class="badge">{{ row.state }}</span></td>
+        <td>
+          <a href="{% url 'results:review' row.class.id %}">Review</a>
+          · <a href="{% url 'results:broadsheet' row.class.id %}">Broadsheet</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No classes yet. Run the setup wizard.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

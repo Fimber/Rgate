@@ -1,0 +1,47 @@
+{% extends "staff_base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h1>School settings</h1>
+<form method="post" enctype="multipart/form-data" class="form card">
+  {% csrf_token %}
+  <label>Name<input name="name" value="{{ current_school.name }}"></label>
+  <p class="muted">School desk: <a href="/{{ current_school.slug }}/">{{ request.get_host }}/{{ current_school.slug }}/</a></p>
+  <label>Address<input name="address" value="{{ current_school.address }}"></label>
+  <label>Motto<input name="motto" value="{{ current_school.motto }}"></label>
+  <label>Phone<input name="contact_phone" value="{{ current_school.contact_phone }}"></label>
+  <label>Email<input name="contact_email" value="{{ current_school.contact_email }}"></label>
+  <label>Brand colour<input name="brand_colour" value="{{ current_school.brand_colour }}"></label>
+  <label>School type
+    <select name="ownership">
+      <option value="private" {% if current_school.ownership == 'private' %}selected{% endif %}>Private school (charges fees)</option>
+      <option value="government" {% if current_school.ownership == 'government' %}selected{% endif %}>Government school (no fees)</option>
+    </select>
+    <span class="help">Government schools have no fee screen and results are never held for owing.</span>
+  </label>
+  {% if current_school.charges_fees %}
+  <label>Bursary<input name="bursary_contact" value="{{ current_school.bursary_contact }}"></label>
+  <label>Owing message<textarea name="owing_message">{{ current_school.owing_message }}</textarea></label>
+  {% endif %}
+  <label>Portal mode
+    <select name="portal_mode">
+      <option value="both" {% if current_school.portal_mode == 'both' %}selected{% endif %}>Accounts and PINs</option>
+      <option value="accounts" {% if current_school.portal_mode == 'accounts' %}selected{% endif %}>Accounts</option>
+      <option value="pins" {% if current_school.portal_mode == 'pins' %}selected{% endif %}>PINs</option>
+    </select>
+  </label>
+  {% include "schools/_card_picker.html" %}
+  <input type="hidden" name="teachers_self_assign" value="0">
+  <label class="check">
+    <input type="checkbox" name="teachers_self_assign" value="1" {% if current_school.teachers_self_assign %}checked{% endif %}>
+    Teachers choose their own classes
+    <span class="help">Teachers add the classes and subjects they teach on their My classes page. They can only pick
+      subjects the school already has, and never one another teacher already takes in that class.
+      You can still change everything on Assignments.</span>
+  </label>
+  <label>Logo<input type="file" name="logo"></label>
+  <label>Stamp<input type="file" name="stamp"></label>
+  <button class="btn primary" type="submit">Save</button>
+</form>
+<p class="muted" style="margin-top:16px">If this school leaves the platform it can take its data:
+  <a href="{% url 'records:export' %}">Download Excel export</a>. Published PDFs remain in the result archive. Deletion notice is 90 days after a written request.</p>
+{% endblock %}

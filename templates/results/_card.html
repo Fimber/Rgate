@@ -1,0 +1,59 @@
+{% with tpl=card_template|default:data.school.template|default:"classic" %}
+<article class="result-card tpl-{{ tpl }}">
+  <header class="result-head">
+    <div class="mark">{{ data.school.name|slice:":3"|upper }}</div>
+    <div>
+      <h1>{{ data.school.name }}</h1>
+      {% if tpl == "classic" and data.school.motto %}<p class="motto">{{ data.school.motto }}</p>{% endif %}
+      <p>{{ data.school.address }}{% if data.school.phone %} · {{ data.school.phone }}{% endif %}</p>
+      <p class="term-line">{{ data.term.name }} Term, {{ data.term.session }}</p>
+    </div>
+  </header>
+  <div class="result-body">
+    <div class="result-facts">
+      <div>Student<strong>{{ data.student.name }}</strong></div>
+      <div>Class<strong>{{ data.student.class }}</strong></div>
+      <div>Admission No.<strong>{{ data.student.admission_number }}</strong></div>
+      <div>Average<strong>{% if data.summary.average %}{{ data.summary.average }}%{% else %}—{% endif %}</strong></div>
+      {% if not hide_positions %}
+      <div>Position<strong>{{ data.summary.position }}{% if data.summary.class_size %} of {{ data.summary.class_size }}{% endif %}</strong></div>
+      {% endif %}
+      <div>Attendance<strong>{{ data.summary.days_present|default:"—" }} of {{ data.term.days_opened|default:"—" }} days</strong></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            {% for key, val in data.subjects.0.components.items %}<th>{{ key }}</th>{% endfor %}
+            <th>Total</th><th>Grade</th>
+            {% if tpl != "compact" %}<th>Remark</th>{% endif %}
+            {% if not hide_positions %}<th>Pos</th>{% endif %}
+            {% if tpl != "compact" %}<th>Class avg</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data.subjects %}
+          <tr>
+            <td>{{ row.name }}</td>
+            {% for key, val in row.components.items %}<td>{{ val }}</td>{% endfor %}
+            <td>{{ row.total }}</td>
+            <td class="grade">{{ row.grade }}</td>
+            {% if tpl != "compact" %}<td>{{ row.remark }}</td>{% endif %}
+            {% if not hide_positions %}<td>{{ row.position }}</td>{% endif %}
+            {% if tpl != "compact" %}<td>{{ row.class_average }}</td>{% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if data.comments.class_teacher %}<p class="result-meta" style="font-family:var(--serif);font-style:italic">{{ data.comments.class_teacher }}</p>{% endif %}
+    {% if data.comments.head_of_school %}<p class="result-meta">{{ data.comments.head_of_school }}</p>{% endif %}
+    {% if data.term.resumption %}<p class="result-meta">Next term resumes {{ data.term.resumption }}</p>{% endif %}
+    {% if sheet.state == 'published' or data.result_code %}
+    <div class="stamp">Published<br>{{ data.result_code|default:sheet.result_code }}</div>
+    {% endif %}
+    <p class="result-meta">Result ID {{ data.result_code|default:sheet.result_code }}</p>
+  </div>
+</article>
+{% endwith %}

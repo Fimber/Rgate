@@ -1,0 +1,69 @@
+{% extends "staff_base.html" %}
+{% load static %}
+{% block title %}My classes{% endblock %}
+{% block content %}
+<h1>My classes</h1>
+{% if not term %}
+  <div class="card"><p>The current term has not been set yet. Ask the school admin.</p></div>
+{% else %}
+<p class="muted">What you teach in {{ term }}. These appear on your Score entry list.</p>
+<div class="grid cards">
+  <div class="card table-wrap">
+    <h2>You take</h2>
+    {% if form_class %}<p><b>Class teacher:</b> {{ form_class.school_class }}</p>{% endif %}
+    <table>
+      <thead><tr><th>Class</th><th>Subject</th>{% if allowed %}<th></th>{% endif %}</tr></thead>
+      <tbody>
+        {% for a in mine %}
+        <tr>
+          <td>{{ a.school_class }}</td><td>{{ a.subject }}</td>
+          {% if allowed %}
+          <td>
+            <form method="post" onsubmit="return confirm('Stop taking {{ a.subject|escapejs }} in {{ a.school_class|escapejs }}? Scores already entered are kept.')">
+              {% csrf_token %}<input type="hidden" name="action" value="drop"><input type="hidden" name="assignment" value="{{ a.id }}">
+              <button class="btn ghost small" type="submit">Remove</button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="muted">Nothing yet.{% if allowed %} Add the classes you teach.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if allowed %}
+  <div>
+    <form method="post" class="form card" id="my-classes-form" autocomplete="off">
+      {% csrf_token %}<input type="hidden" name="action" value="add">
+      <h2>Add classes you teach</h2>
+      {% if not classes %}
+        <p class="help">The school has no classes yet.</p>
+      {% else %}
+        {% include "records/_teach_rows.html" %}
+        <span class="help">One row per class and subject, e.g. SSS 1 A · Mathematics. Pick a subject from the list;
+          if yours is missing, ask the principal to add it.</span>
+        <button class="btn primary" type="submit">Add</button>
+      {% endif %}
+    </form>
+
+    {% if free_classes %}
+    <form method="post" class="form card" style="margin-top:12px">
+      {% csrf_token %}<input type="hidden" name="action" value="form_class">
+      <h2>Your class</h2>
+      <label>I am class teacher for
+        <select name="form_class">{% for c in free_classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+      </label>
+      <span class="help">Only classes without a class teacher this term are listed.</span>
+      <button class="btn primary" type="submit">Save</button>
+    </form>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card"><p>Your school assigns classes and subjects for you. If something is missing or wrong, ask the principal.</p></div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/staff-form.js' %}"></script>{% endblock %}

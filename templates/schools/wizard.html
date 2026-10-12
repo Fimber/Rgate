@@ -1,0 +1,116 @@
+{% extends "staff_base.html" %}
+{% load static %}
+{% block title %}Setup wizard{% endblock %}
+{% block content %}
+<div class="steps">
+  <span class="{% if step == 1 %}on{% endif %}">1 Profile</span>
+  <span class="{% if step == 2 %}on{% endif %}">2 Calendar</span>
+  <span class="{% if step == 3 %}on{% endif %}">3 Classes</span>
+  <span class="{% if step == 4 %}on{% endif %}">4 Assessment</span>
+  <span class="{% if step == 5 %}on{% endif %}">5 Rules</span>
+</div>
+{% if step == 1 %}
+<h1>School profile</h1>
+<form method="post" enctype="multipart/form-data" class="form card">
+  {% csrf_token %}<input type="hidden" name="step" value="1">
+  <label>Name<input name="name" value="{{ current_school.name }}" required></label>
+  <label>Address<input name="address" value="{{ current_school.address }}"></label>
+  <label>Motto<input name="motto" value="{{ current_school.motto }}"></label>
+  <label>Phone<input name="contact_phone" value="{{ current_school.contact_phone }}"></label>
+  <label>Email<input name="contact_email" value="{{ current_school.contact_email }}"></label>
+  <label>Brand colour<input type="color" name="brand_colour" value="{{ current_school.brand_colour }}"></label>
+  <label>School type
+    <select name="ownership">
+      <option value="private" {% if current_school.ownership == 'private' %}selected{% endif %}>Private school (charges fees)</option>
+      <option value="government" {% if current_school.ownership == 'government' %}selected{% endif %}>Government school (no fees)</option>
+    </select>
+    <span class="help">Government schools have no fee screen and results are never held for owing.</span>
+  </label>
+  {% if current_school.charges_fees %}
+  <label>Bursary contact<input name="bursary_contact" value="{{ current_school.bursary_contact }}"></label>
+  <label>Owing message<textarea name="owing_message">{{ current_school.owing_message }}</textarea></label>
+  {% endif %}
+  <label>Logo<input type="file" name="logo" accept="image/*"></label>
+  <label>Stamp or signature<input type="file" name="stamp" accept="image/*"></label>
+  <button class="btn primary" type="submit">Save and continue</button>
+</form>
+{% elif step == 2 %}
+<h1>Session and terms</h1>
+<form method="post" class="form card">
+  {% csrf_token %}<input type="hidden" name="step" value="2">
+  <label>Session name<input name="session_name" value="{{ session.name|default:'2025/2026' }}"></label>
+  <label>Current term
+    <select name="current_term">
+      <option>First</option><option>Second</option><option>Third</option>
+    </select>
+  </label>
+  {% if sessions.count > 1 %}
+  <label>Or copy last session
+    <select name="clone_from">
+      <option value="">Do not copy</option>
+      {% for item in sessions %}<option value="{{ item.id }}">{{ item.name }}</option>{% endfor %}
+    </select>
+    <span class="help">Copies assessment components and opens a fresh term calendar.</span>
+  </label>
+  {% endif %}
+  <button class="btn primary" type="submit">Save calendar</button>
+</form>
+{% elif step == 3 %}
+<h1>Classes and subjects</h1>
+<p class="muted">Use the Nigerian default structure (Creche through SSS 3, arms A and B, standard subjects). You can edit later.</p>
+<form method="post" class="card">
+  {% csrf_token %}<input type="hidden" name="step" value="3">
+  <button class="btn primary" name="use_defaults" value="1" type="submit">Load Nigerian defaults</button>
+</form>
+<div class="card" style="margin-top:12px">
+  {% for level in levels %}
+    <p><strong>{{ level.name }}</strong> · {{ level.get_report_type_display }} ·
+      {% for c in level.classes.all %}{{ c.arm }}{% if not forloop.last %}, {% endif %}{% empty %}no arms{% endfor %}
+    </p>
+  {% empty %}<p class="muted">Nothing loaded yet.</p>{% endfor %}
+</div>
+{% elif step == 4 %}
+<h1>Assessment components</h1>
+<p class="muted">Set each maximum to how your school marks; the total can be anything (for example 60 or 150). Grades use the percentage of that total. Add a CA if your school uses three; remove Assignment if you do not use it.</p>
+<form method="post" class="form card" id="componentsForm">
+  {% csrf_token %}<input type="hidden" name="step" value="4">
+  {% include "schools/_component_editor.html" %}
+</form>
+{% else %}
+<h1>Rules and templates</h1>
+<form method="post" class="form card">
+  {% csrf_token %}<input type="hidden" name="step" value="5">
+  <label>Parent access
+    <select name="portal_mode">
+      <option value="both">Accounts and PINs</option>
+      <option value="accounts">Account login only</option>
+      <option value="pins">Result PIN only</option>
+    </select>
+  </label>
+  {% include "schools/_card_picker.html" %}
+  <label>Tie display <span class="help">Only used when positions are shown.</span>
+    <select name="tie_display">
+      <option value="position">3rd</option>
+      <option value="position_tie">3rd (tie)</option>
+    </select>
+  </label>
+  <label>Incomplete results
+    <select name="incomplete_rule">
+      <option value="block">Do not position until complete</option>
+      <option value="offered">Position on subjects offered</option>
+    </select>
+  </label>
+  <label>Session average
+    <select name="average_formula">
+      <option value="simple">Simple average of terms</option>
+      <option value="weighted">Weighted 20/20/60</option>
+    </select>
+  </label>
+  <label>Pass mark<input name="pass_threshold" type="number" value="{{ current_school.pass_threshold }}"></label>
+  <button class="btn primary" type="submit">Finish setup</button>
+</form>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+{% if step == 4 %}<script src="{% static 'js/components-editor.js' %}"></script>{% endif %}
+{% endblock %}

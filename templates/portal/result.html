@@ -1,0 +1,6 @@
+{% extends "portal_base.html" %}
+{% block title %}Result{% endblock %}
+{% block content %}
+<p><a class="btn primary" href="{% url 'portal:result_pdf' sheet.id %}">Download PDF</a></p>
+{% include "results/_card.html" %}
+{% endblock %}

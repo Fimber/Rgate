@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+media/
+staticfiles/
+.env
+*.log
+.DS_Store
+.coverage
+htmlcov/
+ci.sqlite3
+.ruff_cache/
+
+# Local scratch, not part of the app
+_tmp_ui/
+capture_artifact.py

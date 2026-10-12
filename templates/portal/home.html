@@ -1,0 +1,28 @@
+{% extends "portal_base.html" %}
+{% block title %}Your children{% endblock %}
+{% block content %}
+<h1>Your children</h1>
+<p class="muted">Open a term, read the result on this page, then download the PDF if you want a copy.</p>
+{% for card in cards %}
+  <article class="card" style="margin-bottom:12px">
+    <h2>{{ card.child.full_name }}</h2>
+    <p class="muted">{{ card.child.admission_number }}</p>
+    {% if card.blocked %}
+      <div class="banner error">{{ current_school.owing_message }} {{ current_school.bursary_contact }}</div>
+    {% endif %}
+    {% for result in card.results %}
+      <p>
+        {{ result.term }} 
+        {% if card.blocked %}
+          <span class="badge owing">Held</span>
+        {% else %}
+          <a href="{% url 'portal:result' result.id %}">View</a>
+          · <a href="{% url 'portal:result_pdf' result.id %}">PDF</a>
+        {% endif %}
+      </p>
+    {% empty %}<p class="muted">No published result yet.</p>{% endfor %}
+  </article>
+{% empty %}
+  <div class="card">No children are linked to this phone number. Ask the school office to attach your number.</div>
+{% endfor %}
+{% endblock %}

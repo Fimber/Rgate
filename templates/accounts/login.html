@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in to ReGate</title>
+<meta name="description" content="Sign in to view results, enter scores or manage your school. Parents can also open a result with an admission number and a result checker PIN.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#143A2B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/signin.css' %}">
+</head>
+<body>
+
+<div class="page">
+  <aside class="aside">
+    <a href="{% url 'accounts:landing' %}" class="mark" style="color:var(--brand-ink); text-decoration:none"><span class="crest">RG</span> <b>ReGate</b></a>
+
+    <div>
+      <h1>{% if current_school %}{{ current_school.name }}.{% else %}Welcome back.{% endif %}</h1>
+      <p class="hide-sm">{% if current_school %}Sign in to this school with the email or phone it issued you.{% else %}Staff sign in with the email their school issued. Parents sign in with the phone number the school has on file, or open one result with a checker PIN.{% endif %}</p>
+    </div>
+
+    <div class="help hide-sm">
+      <b>Cannot get in?</b>
+      Ask your school office to confirm the phone number on your child's record. If you are staff, your administrator can reset your password from the staff list.
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="form">
+      <h3>Sign in</h3>
+      <p class="small muted" style="margin-bottom:0">Your school decides what you see once you are in.</p>
+
+      <div class="tabs" role="tablist" aria-label="How you want to sign in">
+        <button type="button" role="tab" id="tab-password" aria-controls="panel-password" aria-selected="{% if tab != 'pin' %}true{% else %}false{% endif %}">Password</button>
+        <button type="button" role="tab" id="tab-pin" aria-controls="panel-pin" aria-selected="{% if tab == 'pin' %}true{% else %}false{% endif %}">Result PIN</button>
+      </div>
+
+      <div class="tabpanel" id="panel-password" role="tabpanel" aria-labelledby="tab-password" {% if tab == 'pin' %}hidden{% endif %}>
+        <div class="alert" id="pwAlert" role="alert" {% if not pw_alert %}hidden{% endif %}>{{ pw_alert }}</div>
+
+        <form id="pwForm" action="" method="post" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next }}">
+          <label class="field">
+            <span class="lbl">Email or phone number</span>
+            <input class="input" id="identifier" name="identifier" type="text" autocomplete="username"
+                   inputmode="email" placeholder="principal@yourschool.ng or 0803 000 0000" required value="{{ identifier }}">
+            <span class="err" id="identifierErr" hidden></span>
+          </label>
+
+          <label class="field">
+            <span class="lbl">Password <a href="{% if current_school %}{% url 'school_forgot' %}{% else %}{% url 'accounts:forgot' %}{% endif %}" class="tiny">Forgot password</a></span>
+            <span class="pw">
+              <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+              <button type="button" id="pwToggle" aria-label="Show password">Show</button>
+            </span>
+            <span class="err" id="passwordErr" hidden></span>
+            <span class="hint" id="capsHint" hidden>Caps lock is on.</span>
+          </label>
+
+          <label class="check" style="margin-bottom:1.35rem">
+            <input type="checkbox" name="remember" value="1" checked>
+            Keep me signed in on this phone
+          </label>
+
+          <button class="btn" type="submit" id="pwSubmit">Sign in</button>
+        </form>
+
+        <div class="rule">or</div>
+        <p class="small muted" style="text-align:center">
+          New school? <a href="{% url 'accounts:register' %}">Register your school</a> and run your first term free.
+        </p>
+        {% if demo_accounts %}
+        <div class="pilot">
+          Pilot accounts — tap to fill, then sign in.
+          {% for account in demo_accounts %}
+          <button type="button" data-demo-phone="{{ account.phone }}" data-demo-password="{{ account.password }}">{{ account.label }} · {{ account.phone }}</button>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="tabpanel" id="panel-pin" role="tabpanel" aria-labelledby="tab-pin" {% if tab != 'pin' %}hidden{% endif %}>
+        <div class="alert" id="pinAlert" role="alert" {% if not pin_alert %}hidden{% endif %}>{{ pin_alert }}</div>
+
+        <form id="pinForm" action="{% if current_school %}{% url 'portal:pin' %}{% else %}/portal/pin/{% endif %}" method="post" novalidate>
+          {% csrf_token %}
+          {% if current_school %}
+          <input type="hidden" name="school" id="school" value="{{ current_school.id }}">
+          {% else %}
+          <label class="field">
+            <span class="lbl">School</span>
+            <select class="input" id="school" name="school" required>
+              <option value="">Choose your school</option>
+              {% for item in schools %}
+              <option value="{{ item.id }}" {% if selected_school == item.id|stringformat:"s" %}selected{% endif %}>{{ item.name }}{% if item.address %}, {{ item.address }}{% endif %}</option>
+              {% endfor %}
+            </select>
+            <span class="err" id="schoolErr" hidden></span>
+          </label>
+          {% endif %}
+
+          <label class="field">
+            <span class="lbl">Admission number</span>
+            <input class="input" id="admission" name="admission_number" type="text" autocomplete="off"
+                   placeholder="GIA/2023/041" required value="{{ admission }}">
+            <span class="err" id="admissionErr" hidden></span>
+          </label>
+
+          <label class="field">
+            <span class="lbl">Result checker PIN</span>
+            <input class="input pincode" id="pin" name="pin" type="text" inputmode="text" autocapitalize="characters" spellcheck="false"
+                   autocomplete="one-time-code" maxlength="14" placeholder="e.g. 7KQ4 MX2P R9" required>
+            <span class="err" id="pinErr" hidden></span>
+            <span class="hint">Buy a PIN from your school's bursary. One PIN opens one term's result five times. Pilot PIN: DEMO1234 with admission GFC/001.</span>
+          </label>
+
+          <button class="btn" type="submit" id="pinSubmit" style="margin-top:.35rem">Open result</button>
+        </form>
+
+        <div class="rule">or</div>
+        <p class="small muted" style="text-align:center">
+          Parents with an account can <a href="#" id="toPassword">sign in with a password</a> instead and see every child at once.
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var DEMO = false;
+  var $ = function (id) { return document.getElementById(id); };
+
+  var tabs = [$("tab-password"), $("tab-pin")];
+  function selectTab(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      $(t.getAttribute("aria-controls")).hidden = !on;
+    });
+    var first = tab.getAttribute("aria-controls") === "panel-pin"
+      ? ($("admission") || $("school"))
+      : $("identifier");
+    if (first && first.focus) first.focus({ preventScroll: true });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () { selectTab(t); });
+    t.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      e.preventDefault();
+      selectTab(t === tabs[0] ? tabs[1] : tabs[0]);
+      (t === tabs[0] ? tabs[1] : tabs[0]).focus();
+    });
+  });
+  $("toPassword").addEventListener("click", function (e) { e.preventDefault(); selectTab(tabs[0]); });
+
+  $("pwToggle").addEventListener("click", function () {
+    var f = $("password"), showing = f.type === "text";
+    f.type = showing ? "password" : "text";
+    this.textContent = showing ? "Show" : "Hide";
+    this.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    f.focus();
+  });
+  $("password").addEventListener("keyup", function (e) {
+    var on = e.getModifierState && e.getModifierState("CapsLock");
+    $("capsHint").hidden = !on;
+  });
+
+  function setError(fieldId, message) {
+    var field = $(fieldId), slot = $(fieldId + "Err");
+    if (!slot) return;
+    if (message) {
+      field.setAttribute("aria-invalid", "true");
+      field.setAttribute("aria-describedby", fieldId + "Err");
+      slot.textContent = message; slot.hidden = false;
+    } else {
+      field.removeAttribute("aria-invalid");
+      field.removeAttribute("aria-describedby");
+      slot.textContent = ""; slot.hidden = true;
+    }
+  }
+  ["identifier", "password", "school", "admission", "pin"].forEach(function (id) {
+    if ($(id)) $(id).addEventListener("input", function () { setError(id, ""); });
+  });
+
+  function banner(el, message, ok) {
+    el.textContent = message;
+    el.className = ok ? "alert ok" : "alert";
+    el.hidden = !message;
+  }
+
+  $("pwForm").addEventListener("submit", function (e) {
+    var id = $("identifier").value.trim(), pw = $("password").value;
+    var bad = false;
+    banner($("pwAlert"), "");
+    if (!id) { setError("identifier", "Enter the email or phone number your school has on file."); bad = true; }
+    if (!pw) { setError("password", "Enter your password."); bad = true; }
+    if (bad) e.preventDefault();
+  });
+
+  $("pin").addEventListener("input", function () {
+    var raw = this.value.replace(/\s/g, "");
+    if (/^\d+$/.test(raw)) {
+      var digits = raw.replace(/\D/g, "").slice(0, 12);
+      this.value = digits.replace(/(.{4})/g, "$1 ").trim();
+    } else if (this.value !== this.value.toUpperCase()) {
+      this.value = this.value.toUpperCase();
+    }
+  });
+
+  $("pinForm").addEventListener("submit", function (e) {
+    var school = $("school").value, adm = $("admission").value.trim();
+    var pin = $("pin").value.replace(/\s/g, "");
+    var bad = false;
+    banner($("pinAlert"), "");
+    if (!school) { setError("school", "Choose the school your child attends."); bad = true; }
+    if (!adm) { setError("admission", "Enter the admission number printed on your child's result."); bad = true; }
+    if (!pin) { setError("pin", "Enter the result checker PIN."); bad = true; }
+    if (bad) e.preventDefault();
+  });
+
+  document.querySelectorAll("[data-demo-phone]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      selectTab(tabs[0]);
+      $("identifier").value = btn.dataset.demoPhone;
+      $("password").value = btn.dataset.demoPassword;
+    });
+  });
+})();
+</script>
+</body>
+</html>

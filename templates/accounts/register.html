@@ -1,0 +1,337 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if registered %}Registered, set up your school{% else %}Register your school with ReGate{% endif %}</title>
+<meta name="description" content="Register your school, import your students and publish this term's results online. Your first term is free.">
+<meta name="theme-color" content="#143A2B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+
+<div class="page">
+  <aside class="aside">
+    <a href="{% url 'accounts:landing' %}" class="mark" style="color:var(--brand-ink);text-decoration:none"><span class="crest">RG</span> <b>ReGate</b></a>
+
+    <div>
+      <h1>Publish this term's results online.</h1>
+      <p class="hide-sm">Register today and you can still make the end of this term. Most schools are set up and importing students the same day.</p>
+      <ul class="proof hide-sm">
+        <li><span class="tick">1</span><span><b>Your first term is free</b>No card, no deposit. Decide after you have published once.</span></li>
+        <li><span class="tick">2</span><span><b>We set it up with you</b>A call to import your student list and match your grading.</span></li>
+        <li><span class="tick">3</span><span><b>Your records stay yours</b>Export every result, broadsheet and transcript whenever you want.</span></li>
+      </ul>
+    </div>
+
+    <div class="help hide-sm">
+      <b>Would rather talk first?</b>
+      Call 0806 719 2903 and we will walk through it, or visit your school if you are in Port Harcourt.
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="form">
+
+      <div id="wizard" {% if registered %}hidden{% endif %}>
+        <div class="prog on-1" id="prog">
+          <div class="now"><i></i><span>Your school</span></div>
+          <div><i></i><span>Your account</span></div>
+        </div>
+
+        <div class="alert" id="alert" role="alert" {% if not alert %}hidden{% endif %}>{{ alert }}</div>
+
+        <form id="regForm" action="{% url 'accounts:register' %}" method="post" novalidate>
+          {% csrf_token %}
+
+          <fieldset class="step" id="step1">
+            <legend style="margin-bottom:.2rem"><h3>Tell us about your school</h3></legend>
+            <p class="small muted">This is the name and address parents will see on every result you publish.</p>
+
+            <label class="field">
+              <span class="lbl">School name</span>
+              <input class="input" id="school" name="school" type="text" autocomplete="organization"
+                     placeholder="Greenfield International Academy" required value="{{ posted.school }}">
+              <span class="err" id="schoolErr" hidden></span>
+              <span class="hint" id="pathHint" data-host="{{ request.get_host }}" hidden></span>
+            </label>
+
+            <div class="two">
+              <label class="field">
+                <span class="lbl">State</span>
+                <select class="input" id="state" name="state" required>
+                  <option value="">Choose</option>
+                  {% for st in states %}
+                  <option {% if posted.state == st %}selected{% endif %}>{{ st }}</option>
+                  {% endfor %}
+                </select>
+                <span class="err" id="stateErr" hidden></span>
+              </label>
+              <label class="field">
+                <span class="lbl">Town or city</span>
+                <input class="input" id="town" name="town" type="text" autocomplete="address-level2"
+                       placeholder="Port Harcourt" required value="{{ posted.town }}">
+                <span class="err" id="townErr" hidden></span>
+              </label>
+            </div>
+
+            <fieldset class="field" style="margin-bottom:1.1rem">
+              <legend class="lbl" style="display:block">School type</legend>
+              <div class="chips" id="ownership">
+                <label class="chip"><input type="radio" name="ownership" value="private" {% if posted.ownership != "government" %}checked{% endif %}><span>Private</span></label>
+                <label class="chip"><input type="radio" name="ownership" value="government" {% if posted.ownership == "government" %}checked{% endif %}><span>Government</span></label>
+              </div>
+              <span class="help small muted">Government schools charge no fees, so results are never held for owing.</span>
+            </fieldset>
+
+            <fieldset class="field" style="margin-bottom:1.1rem">
+              <legend class="lbl" style="display:block">Levels you run</legend>
+              <div class="chips" id="levels">
+                <label class="chip"><input type="checkbox" name="levels" value="nursery" {% if "nursery" in posted.levels %}checked{% endif %}><span>Nursery</span></label>
+                <label class="chip"><input type="checkbox" name="levels" value="primary" {% if "primary" in posted.levels %}checked{% endif %}><span>Primary</span></label>
+                <label class="chip"><input type="checkbox" name="levels" value="junior" {% if "junior" in posted.levels %}checked{% endif %}><span>Junior secondary</span></label>
+                <label class="chip"><input type="checkbox" name="levels" value="senior" {% if "senior" in posted.levels %}checked{% endif %}><span>Senior secondary</span></label>
+              </div>
+              <span class="err" id="levelsErr" hidden></span>
+            </fieldset>
+
+            <label class="field">
+              <span class="lbl">How many students, roughly?</span>
+              <select class="input" id="size" name="size" required>
+                <option value="">Choose</option>
+                <option value="s" {% if posted.size == "s" %}selected{% endif %}>Under 150</option>
+                <option value="m" {% if posted.size == "m" %}selected{% endif %}>151 to 400</option>
+                <option value="l" {% if posted.size == "l" %}selected{% endif %}>401 to 800</option>
+                <option value="xl" {% if posted.size == "xl" %}selected{% endif %}>More than 800</option>
+              </select>
+              <span class="err" id="sizeErr" hidden></span>
+            </label>
+
+            <p class="quote" id="quote" hidden></p>
+
+            <div class="acts"><button class="btn" type="button" id="toStep2">Continue</button></div>
+          </fieldset>
+
+          <fieldset class="step" id="step2" hidden>
+            <legend style="margin-bottom:.2rem"><h3>Create your account</h3></legend>
+            <p class="small muted">This account can create every other account in the school.</p>
+
+            <div class="two">
+              <label class="field">
+                <span class="lbl">Full name</span>
+                <input class="input" id="name" name="name" type="text" autocomplete="name" placeholder="Philomena Okonkwo" required value="{{ posted.name }}">
+                <span class="err" id="nameErr" hidden></span>
+              </label>
+              <label class="field">
+                <span class="lbl">Your role</span>
+                <select class="input" id="role" name="role" required>
+                  <option value="">Choose</option>
+                  {% for r in roles %}
+                  <option {% if posted.role == r %}selected{% endif %}>{{ r }}</option>
+                  {% endfor %}
+                </select>
+                <span class="err" id="roleErr" hidden></span>
+              </label>
+            </div>
+
+            <label class="field">
+              <span class="lbl">Phone number</span>
+              <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"
+                     placeholder="0803 000 0000" required value="{{ posted.phone }}">
+              <span class="err" id="phoneErr" hidden></span>
+              <span class="hint">We call this number to set up your school. It also receives your login codes.</span>
+            </label>
+
+            <label class="field">
+              <span class="lbl">Email</span>
+              <input class="input" id="email" name="email" type="email" autocomplete="email"
+                     inputmode="email" placeholder="principal@yourschool.ng" required value="{{ posted.email }}">
+              <span class="err" id="emailErr" hidden></span>
+            </label>
+
+            <label class="field">
+              <span class="lbl">Password</span>
+              <span class="pw">
+                <input class="input" id="password" name="password" type="password" autocomplete="new-password" required>
+                <button type="button" id="pwToggle" aria-label="Show password">Show</button>
+              </span>
+              <span class="err" id="passwordErr" hidden></span>
+              <span class="hint">At least 8 characters. Use something your deputy can be told, not your bank password.</span>
+            </label>
+
+            <p class="tiny muted" style="margin:.2rem 0 0">Registering means you accept the <a href="{% url 'accounts:terms' %}">terms</a> and the
+              <a href="{% url 'accounts:dpa' %}">data processing agreement</a>, which names your school as the controller of your students' data
+              and us as the processor.</p>
+
+            <div class="acts">
+              <button class="btn ghost" type="button" id="backTo1">Back</button>
+              <button class="btn" type="submit" id="submit" style="flex:1">Create school account</button>
+            </div>
+          </fieldset>
+        </form>
+
+        <p class="small muted" style="margin-top:1.5rem">Already registered? <a href="{% url 'accounts:login' %}">Sign in</a></p>
+      </div>
+
+      <div class="done" id="done" {% if not registered %}hidden{% endif %}>
+        <div class="seal">&#10003;</div>
+        <h3>Your school is registered</h3>
+        <p class="small muted" id="doneLine">{% if email %}We sent a confirmation to {{ email }}.{% else %}We sent a confirmation to your email.{% endif %}</p>
+        {% if school_path %}
+        <p class="quote">Your school desk lives at <b>{{ request.get_host }}{{ school_path }}</b></p>
+        {% endif %}
+
+        <ol class="next">
+          <li><span><b>Import your students</b><span>Download the Excel template, fill it from your register, upload it back. Bad rows are listed with the reason so you fix those instead of starting again.</span></span></li>
+          <li><span><b>Set your grading</b><span>Your assessment components, their weights and your grade boundaries. Set once per level, then it runs every term.</span></span></li>
+          <li><span><b>Add your teachers</b><span>Each one gets their own classes and subjects, and nothing else.</span></span></li>
+        </ol>
+
+        <div class="acts" style="margin-top:1.6rem">
+          <a class="btn wide" href="{% if school_path %}{{ school_path }}app/setup/{% elif current_school %}{% url 'schools:wizard' %}{% else %}#{% endif %}">Start setting up</a>
+        </div>
+        <p class="tiny muted" style="margin-top:1rem">We will also call you within a working day to do this with you, if you want the help.</p>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var DEMO = false;
+  var $ = function (id) { return document.getElementById(id); };
+
+  var RATES = {
+    s:  "About <b>&#8358;250 per student each term</b> at your size. Your first term is free.",
+    m:  "About <b>&#8358;180 per student each term</b> at your size. Your first term is free.",
+    l:  "About <b>&#8358;180 per student each term</b> at your size. Your first term is free.",
+    xl: "Schools your size get a quote. We will work it out on the setup call, and your first term is still free."
+  };
+  function schoolSlug(name) {
+    return (name || "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 40);
+  }
+  function showPathHint() {
+    var hint = $("pathHint");
+    if (!hint) return;
+    var slug = schoolSlug($("school").value);
+    if (slug.length >= 2) {
+      hint.innerHTML = "Your school desk will be <b>" + hint.getAttribute("data-host") + "/" + slug + "/</b>";
+      hint.hidden = false;
+    } else {
+      hint.hidden = true;
+    }
+  }
+  $("school").addEventListener("input", showPathHint);
+  showPathHint();
+
+  $("size").addEventListener("change", function () {
+    var q = $("quote");
+    if (RATES[this.value]) { q.innerHTML = RATES[this.value]; q.hidden = false; }
+    else { q.hidden = true; }
+  });
+  if ($("size").value && RATES[$("size").value]) {
+    $("quote").innerHTML = RATES[$("size").value];
+    $("quote").hidden = false;
+  }
+
+  function setError(id, message) {
+    var field = $(id), slot = $(id + "Err");
+    if (!slot) return;
+    if (message) {
+      if (field.setAttribute) { field.setAttribute("aria-invalid", "true"); field.setAttribute("aria-describedby", id + "Err"); }
+      slot.textContent = message; slot.hidden = false;
+    } else {
+      if (field.removeAttribute) { field.removeAttribute("aria-invalid"); field.removeAttribute("aria-describedby"); }
+      slot.textContent = ""; slot.hidden = true;
+    }
+  }
+  ["school","state","town","size","name","role","phone","email","password"].forEach(function (id) {
+    if (!$(id)) return;
+    $(id).addEventListener("input", function () { setError(id, ""); });
+    $(id).addEventListener("change", function () { setError(id, ""); });
+  });
+  $("levels").addEventListener("change", function () { setError("levels", ""); });
+
+  function firstBad(ids) {
+    for (var i = 0; i < ids.length; i++) {
+      var el = $(ids[i]);
+      if (el && el.getAttribute && el.getAttribute("aria-invalid") === "true") return el;
+    }
+    return null;
+  }
+
+  function validName(v) { return v.trim().length >= 2; }
+  function validPhone(v) {
+    var d = v.replace(/[^\d+]/g, "").replace(/^\+234/, "0");
+    return /^0[7-9][01]\d{8}$/.test(d);
+  }
+  function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); }
+
+  function checkStep1() {
+    var ok = true;
+    if (!validName($("school").value)) { setError("school", "Enter the school's name as it appears on your signboard."); ok = false; }
+    if (!$("state").value) { setError("state", "Choose your state."); ok = false; }
+    if (!validName($("town").value)) { setError("town", "Enter the town or city."); ok = false; }
+    if (!$("levels").querySelector("input:checked")) { setError("levels", "Choose at least one level. You can add others later."); ok = false; }
+    if (!$("size").value) { setError("size", "Choose the range your school falls into. A rough number is fine."); ok = false; }
+    return ok;
+  }
+  function checkStep2() {
+    var ok = true;
+    if (!validName($("name").value)) { setError("name", "Enter your full name."); ok = false; }
+    if (!$("role").value) { setError("role", "Choose your role at the school."); ok = false; }
+    if (!validPhone($("phone").value)) { setError("phone", "Enter an 11 digit Nigerian number, like 0803 000 0000."); ok = false; }
+    if (!validEmail($("email").value)) { setError("email", "Enter an email you check, like principal@yourschool.ng."); ok = false; }
+    if ($("password").value.length < 8) { setError("password", "Use at least 8 characters."); ok = false; }
+    return ok;
+  }
+
+  function showStep(n) {
+    $("step1").hidden = n !== 1;
+    $("step2").hidden = n !== 2;
+    $("prog").className = "prog on-" + n;
+    var cols = $("prog").children;
+    cols[0].className = n === 1 ? "now" : "";
+    cols[1].className = n === 2 ? "now" : "";
+    (n === 1 ? $("school") : $("name")).focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+  $("toStep2").addEventListener("click", function () {
+    if (!checkStep1()) { var bad = firstBad(["school","state","town","size"]); if (bad) bad.focus(); return; }
+    showStep(2);
+  });
+  $("backTo1").addEventListener("click", function () { showStep(1); });
+  $("step1").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.tagName !== "BUTTON") { e.preventDefault(); $("toStep2").click(); }
+  });
+
+  $("pwToggle").addEventListener("click", function () {
+    var f = $("password"), showing = f.type === "text";
+    f.type = showing ? "password" : "text";
+    this.textContent = showing ? "Show" : "Hide";
+    this.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    f.focus();
+  });
+
+  $("regForm").addEventListener("submit", function (e) {
+    var alertEl = $("alert");
+    if (alertEl) alertEl.hidden = true;
+    if (!checkStep1()) { e.preventDefault(); showStep(1); return; }
+    if (!checkStep2()) {
+      e.preventDefault();
+      showStep(2);
+      var bad = firstBad(["name","role","phone","email","password"]); if (bad) bad.focus();
+    }
+  });
+
+  {% if step == 2 %}showStep(2);{% endif %}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends "staff_base.html" %}
+{% block title %}Review {{ school_class }}{% endblock %}
+{% block content %}
+<h1>{{ school_class }}</h1>
+<p class="muted">{{ term }} · {{ cycle.get_state_display }}. Class teacher comments and ratings, then head approval.</p>
+<form method="post">
+  {% csrf_token %}
+  {% for enrollment in enrollments %}
+    {% with sheet=sheets|default_if_none:None %}
+    <article class="card" style="margin-bottom:12px">
+      {% with result=sheets|default:None %}
+      {% endwith %}
+      <h2>{{ enrollment.student.full_name }}</h2>
+      {% for sid, result in sheets.items %}
+        {% if sid == enrollment.id %}
+          <p>{% if result.incomplete %}<span class="badge owing">Incomplete</span>{% endif %}
+            Average {{ result.average|default:"—" }} · Position {{ result.position_class|default:"—" }} · Total {{ result.total_score|default:"—" }}
+            · <a href="{% url 'results:preview' result.id %}">Preview</a>
+          </p>
+          <label>Days present<input type="number" name="present_{{ enrollment.id }}" value="{{ result.days_present|default:'' }}"></label>
+          <label>Class teacher comment
+            <textarea name="ct_{{ enrollment.id }}">{% for c in result.comments.all %}{% if c.author_role == 'class_teacher' %}{{ c.body }}{% endif %}{% endfor %}</textarea>
+          </label>
+          {% if user.role == 'head_of_school' or user.role == 'school_admin' %}
+          <label>Head comment
+            <textarea name="hs_{{ enrollment.id }}">{% for c in result.comments.all %}{% if c.author_role == 'head_of_school' %}{{ c.body }}{% endif %}{% endfor %}</textarea>
+          </label>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      <div class="grid" style="grid-template-columns:repeat(2,1fr);margin-top:8px">
+        {% for trait, value in enrollment.trait_rows %}
+        <label>{{ trait.name }}
+          <select name="trait_{{ enrollment.id }}_{{ trait.id }}">
+            <option value="">—</option>
+            {% for n in "12345" %}
+              <option value="{{ n }}" {% if value|stringformat:"d" == n %}selected{% endif %}>{{ n }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        {% endfor %}
+      </div>
+    </article>
+    {% endwith %}
+  {% endfor %}
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn dark" name="action" value="save_review">Save comments and ratings</button>
+    <button class="btn primary" name="action" value="review">Mark reviewed</button>
+    {% if user.role == 'head_of_school' or user.role == 'school_admin' %}
+    <button class="btn primary" name="action" value="approve">Approve for publish</button>
+    {% endif %}
+  </div>
+</form>
+{% if bank %}
+  <div class="card" style="margin-top:16px">
+    <h2>Comment bank</h2>
+    {% for item in bank %}<p><strong>{{ item.get_role_display }} {{ item.min_average }}–{{ item.max_average }}:</strong> {{ item.body }}</p>{% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

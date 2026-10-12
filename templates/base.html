@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}ReGate{% endblock %}</title>
+  <meta name="theme-color" content="#143A2B">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <style>:root { --school-brand: {{ brand_colour|default:'#143A2B' }}; }</style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  {% if impersonating %}
+  <form class="banner warning impersonation" method="post" action="{% url 'ops:stop_impersonation' %}" role="status">
+    {% csrf_token %}
+    <span>Support session: you are signed in as {{ user.get_full_name }}. Everything is logged.</span>
+    <button class="btn small dark" type="submit">Return to HQ</button>
+  </form>
+  {% endif %}
+  {% block shell %}{% endblock %}
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

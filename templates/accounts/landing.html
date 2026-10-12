@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReGate, school results computed and published online</title>
+<meta name="description" content="ReGate computes every score, position and broadsheet for your school, then publishes results to parents' phones. Teachers enter scores from their own phones.">
+<meta property="og:title" content="School results your parents can open at home">
+<meta property="og:description" content="Scores in from a phone, results computed, approved by the principal, published to parents. First term free.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#143A2B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+</head>
+<body>
+
+  <header class="mast">
+    <div class="wrap mast-in">
+      <a href="{% url 'accounts:landing' %}" class="mark" style="text-decoration:none"><span class="crest sm">RG</span> <b>ReGate</b></a>
+      <nav>
+        <a href="#how" class="hide-sm">How it works</a>
+        <a href="#fees" class="hide-sm">Fee control</a>
+        <a href="#pricing" class="hide-sm">Pricing</a>
+        <a href="{% url 'accounts:login' %}">Sign in</a>
+        <a href="{% url 'accounts:register' %}" class="btn sm">Register your school</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap hero">
+    <div>
+      <h1>Results your parents can open before they leave the school gate.</h1>
+      <p class="lede">ReGate computes every score, position and broadsheet for your school, then publishes results to parents' phones. Teachers enter scores from their own phones. No booklets to buy.</p>
+      <div class="cta">
+        <a href="{% url 'accounts:register' %}" class="btn">Register your school</a>
+        <a href="/greenfield/login/" class="btn ghost">See a teacher enter scores</a>
+      </div>
+      <p class="assure">Set up in a day. Your first term is free. Your results stay online permanently.</p>
+    </div>
+
+    <div class="paper hero-card">
+      <div class="rc">
+        <div class="rc-head">
+          <span class="crest">GIA</span>
+          <div style="flex:1">
+            <h4>Greenfield International Academy</h4>
+            <div class="sub">12 Rumuola Road, Port Harcourt<br>Second Term, 2025/2026</div>
+          </div>
+        </div>
+        <div class="rc-bio">
+          <div><b>Student</b>Adaeze Nwachukwu</div>
+          <div><b>Class</b>JSS 2A</div>
+          <div><b>Admission no.</b>GIA/2023/041</div>
+          <div><b>Average</b>78.4%</div>
+          <div><b>Position</b>2nd of 34</div>
+          <div><b>Attendance</b>58 of 61 days</div>
+        </div>
+        <table class="sheet">
+          <thead><tr><th>Subject</th><th>CA</th><th>Exam</th><th>Total</th><th>Grade</th><th>Class avg</th></tr></thead>
+          <tbody>
+            <tr><td>English Language</td><td>26</td><td>55</td><td>81</td><td class="g g-a">A1</td><td>62.1</td></tr>
+            <tr><td>Mathematics</td><td>24</td><td>52</td><td>76</td><td class="g g-a">A1</td><td>58.4</td></tr>
+            <tr><td>Basic Science</td><td>22</td><td>49</td><td>71</td><td class="g g-b">B2</td><td>60.7</td></tr>
+            <tr><td>Business Studies</td><td>25</td><td>58</td><td>83</td><td class="g g-a">A1</td><td>64.9</td></tr>
+            <tr><td>Civic Education</td><td>21</td><td>46</td><td>67</td><td class="g g-b">B3</td><td>63.2</td></tr>
+          </tbody>
+        </table>
+        <div class="rc-foot">
+          <p class="rc-note">A steady, careful term. Adaeze should speak up more in class discussion.</p>
+          <div style="text-align:right"><div class="rc-sign">P. Okonkwo</div><div class="tiny muted">Head of school</div></div>
+        </div>
+      </div>
+      <div class="stamp green land"><div>PUBLISHED<b>14 Apr</b>2026</div></div>
+    </div>
+  </div>
+
+  <div class="band" id="how">
+    <div class="wrap">
+      <h2>One term, start to finish</h2>
+      <p class="lede">Nothing leaves the school until the principal has seen it and approved it.</p>
+      <div class="steps">
+        <div class="step"><div><h4>Teachers enter scores</h4><p>Each teacher sees only their own classes and subjects. Scores save as they type, even when the network drops. Anyone who prefers a laptop can download the class sheet, fill it offline and upload it back.</p></div></div>
+        <div class="step"><div><h4>The system computes</h4><p>Totals, grades, subject positions, class averages, highest and lowest scores, overall position and cumulative average. Ties, absences and part-term entrants follow rules you set once.</p></div></div>
+        <div class="step"><div><h4>Class teacher and principal review</h4><p>The class teacher adds attendance, behaviour ratings and a comment. The principal reads the sheet, comments and approves. Every action is signed and timestamped.</p></div></div>
+        <div class="step"><div><h4>You publish</h4><p>One click for a class, an arm or the whole school. Parents get an SMS with a link. A published result cannot be quietly edited; corrections create a new version with a visible trail.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="wrap">
+      <h2>Three people, three different jobs</h2>
+      <div class="roles">
+        <div class="role">
+          <div class="who">Teacher</div>
+          <h3>Enter scores from your phone</h3>
+          <p>No spreadsheet formulas, no calculator, no late night adding columns. Type the scores and the totals follow.</p>
+        </div>
+        <div class="role">
+          <div class="who">Principal or proprietor</div>
+          <h3>See what is done and what is late</h3>
+          <p>A live count of which subjects are complete and which teacher is holding up the class. Chase people with facts instead of guesses.</p>
+        </div>
+        <div class="role">
+          <div class="who">Parent</div>
+          <h3>Check the result at home</h3>
+          <p>Log in with the phone number the school has on file. View the result, download the PDF, print it if you want a paper copy.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="band" id="fees">
+    <div class="wrap split">
+      <div>
+        <h2>Fees, without sending anyone home</h2>
+        <p class="lede">The bursar marks a student as owing. That student's result stays locked until the fees are cleared, and the parent sees exactly who to talk to. Clear the payment and access returns the same second.</p>
+        <p class="small muted">ReGate tracks the status your bursar sets. It does not run your accounts, hold your money or replace your ledger.</p>
+        <a href="/greenfield/portal/fees/" class="btn ghost">Open the fee screen</a>
+      </div>
+      <div class="paper" style="padding:1.1rem">
+        <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:.9rem">
+          <b style="font-size:.95rem">Second Term fee status</b><span class="pill">JSS 2A</span>
+        </div>
+        <table class="sheet">
+          <tbody>
+            <tr><td>Adaeze Nwachukwu</td><td><span class="pill ok"><i class="dot"></i>Cleared</span></td></tr>
+            <tr><td>Emeka Okonkwo</td><td><span class="pill ok"><i class="dot"></i>Cleared</span></td></tr>
+            <tr><td>Somto Nwachukwu</td><td><span class="pill bad"><i class="dot"></i>Owing</span></td></tr>
+            <tr><td>Tobi Adeyemi</td><td><span class="pill warn"><i class="dot"></i>Part payment</span></td></tr>
+          </tbody>
+        </table>
+        <p class="tiny muted" style="margin:.9rem 0 0">Somto's parent sees a notice with the bursary's phone number instead of the result.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="band band-dark">
+    <div class="wrap split">
+      <div>
+        <h2>The records outlive the student</h2>
+        <p class="lede">A result published today is still there when that student needs a transcript for university in 2034, rendered exactly as it was published, on the grading scale that was in force at the time.</p>
+      </div>
+      <div>
+        <p style="font-family:var(--serif);font-size:1.45rem;line-height:1.35;margin:0;max-width:26ch">A transcript that used to take three days now takes one click.</p>
+        <a href="/greenfield/app/transcripts/" class="btn ghost" style="margin-top:1.3rem;border-color:rgba(255,255,255,.35);color:var(--brand-ink)">Look at a transcript</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="band" id="pricing">
+    <div class="wrap">
+      <h2>Pay per student, per term</h2>
+      <p class="lede">Compare it against what you spend on result booklets, broadsheet printing and the staff hours that disappear every end of term.</p>
+      <div class="price">
+        <div class="tier">
+          <b>Starter</b>
+          <div class="amt">₦250</div>
+          <div class="small muted">per student, per term. Up to 150 students.</div>
+          <ul><li>Results, broadsheets, transcripts</li><li>Parent portal and PDF downloads</li><li>Fee status blocking</li><li>Email support</li></ul>
+        </div>
+        <div class="tier pick">
+          <b>School</b> <span class="pill warn">Most schools</span>
+          <div class="amt">₦180</div>
+          <div class="small muted">per student, per term. 151 to 800 students.</div>
+          <ul><li>Everything in Starter</li><li>SMS alerts when results publish</li><li>Result checker PINs you can sell</li><li>On-site setup and staff training</li><li>Phone support through result week</li></ul>
+        </div>
+        <div class="tier">
+          <b>Group</b>
+          <div class="amt">Let's talk</div>
+          <div class="small muted">Over 800 students, or several campuses.</div>
+          <ul><li>Everything in School</li><li>One login across campuses</li><li>Custom result card design</li><li>Named support contact</li></ul>
+        </div>
+      </div>
+      <p class="small muted" style="margin-top:1.25rem">First term free, no card required. Cancel and export everything you have as Excel and PDF.</p>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="narrow">
+      <h2 style="margin-bottom:1.2rem">Questions schools ask</h2>
+      <details class="faq" open><summary>Our teachers are not computer people.</summary><p>Score entry is a list of names with boxes for marks, built for a phone. Training takes about forty minutes and we do it on site. Any teacher who still prefers paper can hand their sheet to the class teacher, who types it in.</p></details>
+      <details class="faq"><summary>What if the network is bad during entry?</summary><p>Scores save on the phone as they are typed and sync when the connection returns. Nothing is lost when a page drops.</p></details>
+      <details class="faq"><summary>Can we still give parents paper?</summary><p>Yes. Every result downloads as a PDF you can print, and broadsheets print on A3 or A4.</p></details>
+      <details class="faq"><summary>Our grading is different from other schools.</summary><p>You set your own assessment components, weights and grade boundaries, separately for nursery, primary and secondary. Nothing is fixed by us.</p></details>
+      <details class="faq"><summary>Who can see our students' data?</summary><p>Only the staff you give accounts to, and each parent for their own children. We are the processor, your school is the controller, and that is written into the contract. Data is encrypted, every action is logged, and you can export or delete everything on request.</p></details>
+      <details class="faq"><summary>What happens if we stop paying?</summary><p>Your account becomes read only for 90 days, which is long enough to export every result, broadsheet and transcript. We tell you before anything is deleted.</p></details>
+    </div>
+  </div>
+
+  <div class="band" style="padding-bottom:2rem">
+    <div class="wrap center">
+      <h2 style="margin-inline:auto">Publish your next result online</h2>
+      <p class="lede" style="margin-inline:auto">Register now and set up before the term ends. First term is free.</p>
+      <div class="row" style="justify-content:center;margin-top:1.4rem">
+        <a href="{% url 'accounts:register' %}" class="btn">Register your school</a>
+        <a href="{% url 'accounts:login' %}" class="btn ghost">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="wrap row" style="justify-content:space-between;align-items:center">
+      <span class="mark" style="font-size:1rem"><span class="crest sm">RG</span> ReGate</span>
+      <span>Port Harcourt, Nigeria &nbsp;&nbsp; 0806 719 2903 · <a href="{% url 'accounts:privacy' %}">Privacy</a></span>
+    </div>
+  </div>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+  link.addEventListener('click', function (e) {
+    var target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.pushState(null, '', link.getAttribute('href'));
+  });
+});
+
+var faqs = document.querySelectorAll('details.faq');
+faqs.forEach(function (d) {
+  d.addEventListener('toggle', function () {
+    if (!d.open) return;
+    faqs.forEach(function (other) { if (other !== d) other.open = false; });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% extends "ops_base.html" %}
+{% block title %}Impersonate{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Support impersonation</h1>
+  <p class="muted">Logged, and it requires recorded consent from the school.</p>
+</div>
+<form method="post" class="form card" style="max-width:560px">
+  {% csrf_token %}
+  <label>User
+    <select name="target">
+      {% for u in users %}<option value="{{ u.id }}">{{ u.get_full_name }} · {{ u.phone }} · {{ u.school }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Reason<input name="reason" required></label>
+  <label class="check" style="display:flex;align-items:center;gap:.5rem;color:var(--text)"><input type="checkbox" name="consent"> School consented</label>
+  <button class="btn danger" type="submit">Start session</button>
+</form>
+{% endblock %}

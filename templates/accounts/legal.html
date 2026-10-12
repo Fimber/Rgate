@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} · ReGate</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <aside class="aside">
+    <a href="{% url 'accounts:landing' %}" class="mark" style="color:var(--brand-ink);text-decoration:none"><span class="crest">RG</span> <b>ReGate</b></a>
+    <div>
+      <h1>{{ title }}</h1>
+      <p class="hide-sm">Your school is the controller. ReGate is the processor.</p>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="form">
+      {% if kind == "terms" %}
+      <h3>Terms of use</h3>
+      <p class="muted">ReGate is a results system. Your school remains responsible for the scores it enters, the results it publishes, and how it treats fee holds. First term is free. You may export your data and leave. After non-payment, the account is read-only for 90 days, then deleted after notice.</p>
+      {% else %}
+      <h3>Data processing agreement</h3>
+      <p class="muted">The school is the controller of student, parent and staff personal data under the Nigeria Data Protection Act. ReGate is the processor. We use the data only to compute, publish and retain academic results, encrypt it in transit and at rest, restrict access by role, log access, and notify the school of a breach so the school can notify affected people.</p>
+      {% endif %}
+      <p><a class="btn" href="{% url 'accounts:register' %}">Back to register</a></p>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+[project]
+name = "regate"
+version = "0.2.0"
+description = "Multi-tenant results system for Nigerian private schools"
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-exclude = ["*/migrations/*", ".venv", "staticfiles", "media", "capture_artifact.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "S"]
+ignore = [
+    "E501",  # ruff format owns line length
+    "S101",  # assert is fine in tests
+    "S105",  # test and demo passwords are deliberate
+    "S106",
+    "S311",  # random is not used for secrets; secrets is
+    "B904",
+    "DJ001",
+    "DJ008",  # __str__ on every model is noise for internal tables
+    "B905",  # zip() pairs here are built from the same list
+    "S112",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S"]
+"*/management/commands/*" = ["S"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["accounts", "common", "config", "ops", "portal", "records", "results", "schools", "tests"]
+
+[tool.coverage.run]
+source = ["."]
+omit = [".venv/*", "*/migrations/*", "tests/*", "manage.py", "config/asgi.py", "config/wsgi.py", "capture_artifact.py"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

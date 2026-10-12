@@ -1,0 +1,21 @@
+{% extends "staff_base.html" %}
+{% block title %}Score entry{% endblock %}
+{% block content %}
+<h1>Your sheets</h1>
+<p class="muted">{% if term %}{{ term }}{% else %}No current term.{% endif %}. Open a class, enter scores, submit when complete.</p>
+<div class="grid cards">
+  {% for row in rows %}
+  <a class="card" href="{% url 'results:score_entry' row.assignment.id %}">
+    <h2>{{ row.assignment.subject }}</h2>
+    <p>{{ row.assignment.school_class }}</p>
+    <p class="muted">{{ row.filled }}/{{ row.enrollments }} students started · {{ row.sheet.get_state_display }}</p>
+  </a>
+  {% empty %}
+  <div class="card">No subjects are assigned to you for this term.
+    {% if current_school.teachers_self_assign and not user.is_school_admin_like %}
+      <a href="{% url 'records:my_classes' %}">Add the classes you teach</a>.
+    {% elif not user.is_school_admin_like %}Ask the principal to assign them.{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

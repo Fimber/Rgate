@@ -1,0 +1,57 @@
+{% extends "staff_base.html" %}
+{% load static %}
+{% block title %}{{ assignment.subject }} · {{ assignment.school_class }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Score entry</h1>
+  <p class="muted">{{ assignment.subject }} · {{ assignment.school_class }}. Scores save as you type, even if the network drops.</p>
+  <p data-sync-state data-state="synced"><span class="status-dot synced"></span> Synced</p>
+</div>
+{% if locked %}<div class="banner info">Submitted. Only an admin can edit this sheet.</div>{% endif %}
+<form data-score-form data-draft-key="sheet-{{ assignment.id }}" data-save-url="{% url 'results:score_save' assignment.id %}">
+  {% csrf_token %}
+  <div class="score-list">
+    {% for row in rows %}
+    <article class="score-row">
+      <h3>{{ row.enrollment.student.full_name }}</h3>
+      <p class="muted">{{ row.enrollment.student.admission_number }}</p>
+      <div class="score-inputs">
+        {% for cell in row.cells %}
+        <label>{{ cell.component.name }} / {{ cell.component.max_score }}
+          <input
+            inputmode="decimal"
+            type="number"
+            min="0"
+            max="{{ cell.component.max_score }}"
+            step="0.5"
+            {% if locked %}readonly{% endif %}
+            data-cell="{{ row.enrollment.id }}-{{ cell.component.id }}"
+            data-enrollment="{{ row.enrollment.id }}"
+            data-component="{{ cell.component.id }}"
+            data-marker="score"
+            value="{% if cell.score and cell.score.marker == 'score' %}{{ cell.score.value }}{% endif %}"
+            placeholder="{% if cell.score and cell.score.marker != 'score' %}{{ cell.score.marker }}{% endif %}">
+        </label>
+        {% endfor %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</form>
+<div class="toolbar-actions">
+  <a class="btn ghost" href="{% url 'results:score_excel' assignment.id %}">Download Excel</a>
+  <form method="post" action="{% url 'results:score_excel' assignment.id %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="file" required>
+    <button class="btn dark" type="submit">Upload Excel</button>
+  </form>
+  {% if not locked %}
+  <form method="post" action="{% url 'results:score_submit' assignment.id %}">{% csrf_token %}<button class="btn primary">Mark submitted</button></form>
+  {% elif user.is_school_admin_like %}
+  <form method="post" action="{% url 'results:score_unlock' assignment.id %}">{% csrf_token %}<button class="btn danger">Reopen sheet</button></form>
+  {% endif %}
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/score-entry.js' %}"></script>
+{% endblock %}

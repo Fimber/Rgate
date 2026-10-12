@@ -1,0 +1,20 @@
+{% extends "staff_base.html" %}
+{% block title %}Import students{% endblock %}
+{% block content %}
+<h1>Import students</h1>
+<p class="muted">Errors are reported row by row. A bad row does not reject the rest of the file.</p>
+<p><a class="btn ghost" href="{% url 'records:student_template' %}">Download template</a></p>
+<form method="post" enctype="multipart/form-data" class="form card">
+  {% csrf_token %}
+  <label>Excel or CSV-compatible xlsx<input type="file" name="file" required></label>
+  <button class="btn primary" type="submit">Upload</button>
+</form>
+{% if result %}
+  <div class="card" style="margin-top:12px">
+    <p>Created {{ result.created }}, updated {{ result.updated }}.</p>
+    {% if result.errors %}
+      <ul>{% for err in result.errors %}<li>Row {{ err.row }}: {{ err.error }}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

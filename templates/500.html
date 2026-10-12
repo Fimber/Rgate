@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong on our side · ReGate{% endblock %}
+{% block shell %}
+<main id="main" class="content">
+  <div class="wrap" style="max-width:640px">
+    <div class="public-mast">
+      <a class="brand" href="/"><span class="crest sm">RG</span> <b>ReGate</b></a>
+    </div>
+    <div class="card">
+      <p class="muted">Error 500</p>
+      <h1>Something went wrong on our side</h1>
+      <p>It has been logged. Please try again in a minute. Your scores and results are safe.</p>
+      <p><a class="btn primary" href="/go/">Go to my home page</a></p>
+    </div>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Verify result{% endblock %}
+{% block shell %}
+<main class="content">
+  <div class="wrap" style="max-width:820px">
+    <div class="public-mast">
+      <a class="brand" href="{% url 'accounts:landing' %}"><span class="crest sm">RG</span> <b>ReGate</b></a>
+      <a class="btn ghost small" href="{% if current_school %}{% url 'school_login' %}{% else %}{% url 'accounts:login' %}{% endif %}">Sign in</a>
+    </div>
+    {% if missing %}
+      <div class="card"><h1>Not found</h1><p class="muted">No published result matches {{ code }}.</p></div>
+    {% else %}
+      {% include "results/_card.html" %}
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

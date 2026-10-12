@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Result PIN · ReGate</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#143A2B">
+<link rel="stylesheet" href="{% static 'css/signin.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <aside class="aside">
+    <a href="{% url 'accounts:landing' %}" class="mark" style="color:var(--brand-ink);text-decoration:none"><span class="crest">RG</span> <b>ReGate</b></a>
+    <div>
+      <h1>Open one result with a PIN.</h1>
+      <p class="hide-sm">Admission number plus the scratch-card PIN the school issued. This does not create an account.</p>
+    </div>
+    <div class="help hide-sm">
+      <b>Cannot get in?</b>
+      Ask the bursary for a new PIN if this one has been used five times.
+    </div>
+  </aside>
+  <main class="main">
+    <div class="form">
+      <h3>Open with a PIN</h3>
+      <p class="small muted">The school decides whether this result is still held for fees.</p>
+      {% if messages %}{% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}{% endif %}
+      <form method="post" action="{% if current_school %}{% url 'portal:pin' %}{% else %}/portal/pin/{% endif %}">
+        {% csrf_token %}
+        <label class="field">
+          <span class="lbl">School</span>
+          <select class="input" name="school">
+            {% for item in schools %}<option value="{{ item.id }}" {% if school and school.id == item.id %}selected{% endif %}>{{ item.name }}</option>{% endfor %}
+          </select>
+        </label>
+        <label class="field">
+          <span class="lbl">Admission number</span>
+          <input class="input" name="admission_number" required placeholder="GFC/001" value="{{ admission }}">
+        </label>
+        <label class="field">
+          <span class="lbl">PIN</span>
+          <input class="input pincode" name="pin" required autocomplete="one-time-code" inputmode="numeric">
+        </label>
+        <button class="btn" type="submit">View result</button>
+      </form>
+      <p class="small muted" style="margin-top:1.4rem">Have an account? <a href="{% if current_school %}{% url 'school_login' %}{% else %}{% url 'accounts:login' %}{% endif %}">Sign in</a></p>
+    </div>
+  </main>
+</div>
+</body>
+</html>

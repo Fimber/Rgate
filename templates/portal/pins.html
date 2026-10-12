@@ -1,0 +1,34 @@
+{% extends "staff_base.html" %}
+{% block title %}Result PINs{% endblock %}
+{% block content %}
+<h1>Result PINs</h1>
+<p class="muted">Generate a batch, print or sell, then the parent enters admission number plus PIN. Each PIN has a view limit.</p>
+{% if created %}
+  <div class="banner success">New PINs — copy now:
+    {% for pin in created %}<strong>{{ pin.code }}</strong>{% if not forloop.last %}, {% endif %}{% endfor %}
+  </div>
+{% endif %}
+<form method="post" class="form card">
+  {% csrf_token %}
+  <label>How many<input type="number" name="count" value="10" min="1" max="200"></label>
+  <label>Views per PIN<input type="number" name="uses" value="5" min="1" max="20"></label>
+  <label>Batch label<input name="batch"></label>
+  <label>Bind to one student (optional)
+    <select name="student">
+      <option value="">Any student at this school</option>
+      {% for s in students %}<option value="{{ s.id }}">{{ s.admission_number }} {{ s.full_name }}</option>{% endfor %}
+    </select>
+  </label>
+  <button class="btn primary" type="submit">Generate</button>
+</form>
+<div class="card table-wrap" style="margin-top:12px">
+  <table>
+    <thead><tr><th>Code</th><th>Student</th><th>Uses left</th><th>Batch</th></tr></thead>
+    <tbody>
+      {% for pin in pins %}
+      <tr><td>{{ pin.code }}</td><td>{{ pin.student|default:"Open" }}</td><td>{{ pin.uses_remaining }}/{{ pin.max_uses }}</td><td>{{ pin.batch_label }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

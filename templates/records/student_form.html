@@ -1,0 +1,31 @@
+{% extends "staff_base.html" %}
+{% block title %}Student{% endblock %}
+{% block content %}
+<h1>{% if student %}Edit {{ student.full_name }}{% else %}Add student{% endif %}</h1>
+<form method="post" enctype="multipart/form-data" class="form card">
+  {% csrf_token %}
+  <label>Admission number<input name="admission_number" value="{{ student.admission_number }}" required></label>
+  <label>Surname<input name="surname" value="{{ student.surname }}" required></label>
+  <label>First name<input name="first_name" value="{{ student.first_name }}" required></label>
+  <label>Other names<input name="other_names" value="{{ student.other_names }}"></label>
+  <label>Sex
+    <select name="sex"><option value="M">Male</option><option value="F" {% if student.sex == 'F' %}selected{% endif %}>Female</option></select>
+  </label>
+  <label>Date of birth<input type="date" name="date_of_birth" value="{{ student.date_of_birth|date:'Y-m-d' }}"></label>
+  <label>Class this term
+    <select name="school_class">
+      {% for c in classes %}<option value="{{ c.id }}" {% if c.id == current_class_id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Parent name<input name="parent_name" value="{{ student.parent_name }}"></label>
+  <label>Parent phone<input name="parent_phone" type="tel" inputmode="tel" value="{{ student.parent_phone }}"></label>
+  <label>Parent email<input name="parent_email" type="email" value="{{ student.parent_email }}"></label>
+  <label>Status
+    <select name="status">
+      {% for value, label in statuses %}<option value="{{ value }}" {% if student.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Passport photo<input type="file" name="photo" accept="image/*"><span class="help">Optional. Never required to publish.</span></label>
+  <button class="btn primary" type="submit">Save</button>
+</form>
+{% endblock %}

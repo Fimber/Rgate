@@ -1,0 +1,47 @@
+{% extends "staff_base.html" %}
+{% load static %}
+{% block title %}Structure{% endblock %}
+{% block content %}
+<h1>Academic structure</h1>
+<form method="post" class="card" style="margin-bottom:14px">{% csrf_token %}
+  <button class="btn dark" name="action" value="defaults">Reload Nigerian defaults</button>
+</form>
+<div class="grid cards">
+  <form method="post" class="card form">{% csrf_token %}
+    <h2>Add arm</h2>
+    <input type="hidden" name="action" value="add_class">
+    <label>Level
+      <select name="level">{% for level in levels %}<option value="{{ level.id }}">{{ level.name }}</option>{% endfor %}</select>
+    </label>
+    <label>Arm<input name="arm" placeholder="Gold"></label>
+    <button class="btn primary" type="submit">Add</button>
+  </form>
+  <form method="post" class="card form">{% csrf_token %}
+    <h2>Add subject to a level</h2>
+    <input type="hidden" name="action" value="add_subject">
+    <label>Level
+      <select name="level">{% for level in levels %}<option value="{{ level.id }}">{{ level.name }}</option>{% endfor %}</select>
+    </label>
+    <label>Subject name<input name="subject_name"></label>
+    <label><input type="checkbox" name="is_core" checked style="width:auto;min-height:auto"> Core</label>
+    <button class="btn primary" type="submit">Add</button>
+  </form>
+</div>
+{% for level in levels %}
+  <article class="card" style="margin-top:12px">
+    <h2>{{ level.name }} <span class="badge">{{ level.get_report_type_display }}</span></h2>
+    <p>Arms: {% for c in level.classes.all %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% empty %}none{% endfor %}</p>
+    <p class="muted">{% for ls in level.level_subjects.all %}{{ ls.subject.name }}{% if not ls.is_core %} (elective){% endif %}{% if not forloop.last %}, {% endif %}{% empty %}No subjects{% endfor %}</p>
+  </article>
+{% endfor %}
+<h2 style="margin:1.6rem 0 .6rem">Assessment components</h2>
+<p class="muted">Set each maximum to how this school marks; the total can be anything, and grades use the percentage of it. Changing a maximum keeps scores already entered; removing a component deletes its scores for this session.</p>
+<form method="post" class="form card" id="componentsForm">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="save_components">
+  {% include "schools/_component_editor.html" with save_label="Save components" %}
+</form>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/components-editor.js' %}"></script>
+{% endblock %}

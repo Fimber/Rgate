@@ -1,0 +1,66 @@
+{% extends "staff_base.html" %}
+{% load static %}
+{% block title %}Staff{% endblock %}
+{% block content %}
+<h1>Staff</h1>
+<div class="grid cards">
+  {% if user.is_school_admin_like %}
+  <form method="post" class="form card" id="staff-form" autocomplete="off">
+    {% csrf_token %}
+    <h2>Add staff</h2>
+    <label>First name<input name="first_name" value="{{ posted.first_name }}" required></label>
+    <label>Last name<input name="last_name" value="{{ posted.last_name }}" required></label>
+    <label>Phone<input name="phone" type="tel" inputmode="tel" value="{{ posted.phone }}" required></label>
+    <label>Email<input name="email" type="email" value="{{ posted.email }}"></label>
+    <label>Role
+      <select name="role" id="staff-role">
+        {% for value, label in roles %}<option value="{{ value }}" {% if posted.role == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+      </select>
+    </label>
+
+    <fieldset class="field" id="teaching" data-teaching-roles="subject_teacher class_teacher">
+      <legend class="lbl">Classes and subjects they teach{% if term %} in {{ term }}{% endif %}</legend>
+      {% if not term %}
+        <p class="help">Set the current term in the setup wizard before giving staff classes and subjects.</p>
+      {% elif not classes %}
+        <p class="help">Add classes under Structure first.</p>
+      {% else %}
+      {% include "records/_teach_rows.html" %}
+      <span class="help">One row per class and subject, e.g. SSS 1 A · Mathematics, then SSS 1 B · Mathematics. Type any subject; a new one is added to the school's list.</span>
+      {% endif %}
+    </fieldset>
+
+    {% if term and classes %}
+    <label id="form-class-field">Class teacher for
+      <select name="form_class">
+        <option value="">Not a class teacher yet</option>
+        {% for c in classes %}<option value="{{ c.id }}" {% if c.id == posted.form_class %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+      </select>
+      <span class="help">The class whose results they review before the principal approves.</span>
+    </label>
+    {% endif %}
+
+    <label>Password<input name="password" type="text" autocomplete="off" minlength="8" placeholder="Leave blank to generate one"><span class="help">They must change it at first sign-in.</span></label>
+    <button class="btn primary" type="submit">Add</button>
+  </form>
+  {% endif %}
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Phone</th><th>Role</th><th>Teaches</th></tr></thead>
+      <tbody>
+        {% for person in staff %}
+        <tr>
+          <td>{{ person.get_full_name }}</td><td>{{ person.phone }}</td><td>{{ person.get_role_display }}</td>
+          <td>
+            {% if person.form_class %}<div><b>Class teacher:</b> {{ person.form_class }}</div>{% endif %}
+            {{ person.teaching|join:", "|default:"—" }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="help" style="margin-top:.6rem">Change who teaches what later on <a href="{% url 'records:assignments' %}">Assignments</a>.</p>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/staff-form.js' %}"></script>{% endblock %}

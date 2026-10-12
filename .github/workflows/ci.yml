@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13"]
+        database: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: regate
+          POSTGRES_PASSWORD: regate
+          POSTGRES_DB: regate
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U regate" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DB_ENGINE: ${{ matrix.database == 'postgres' && 'django.db.backends.postgresql' || 'django.db.backends.sqlite3' }}
+      DB_NAME: ${{ matrix.database == 'postgres' && 'regate' || 'ci.sqlite3' }}
+      DB_USER: regate
+      DB_PASSWORD: regate
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Migrations are committed
+        run: DEBUG=true python manage.py makemigrations --check --dry-run
+      - name: Tests
+        run: coverage run manage.py test && coverage report --fail-under=72
+      - name: Production settings boot
+        env:
+          DEBUG: "false"
+          SECRET_KEY: ci-only-${{ github.run_id }}-0123456789abcdefghijklmnopqrstuvwxyz0123456789
+          ALLOWED_HOSTS: regate.example
+        run: python manage.py check --deploy --fail-level WARNING

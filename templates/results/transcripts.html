@@ -1,0 +1,17 @@
+{% extends "staff_base.html" %}
+{% block title %}Transcripts{% endblock %}
+{% block content %}
+<h1>Transcripts</h1>
+<form method="get" class="card toolbar">
+  <input name="q" value="{{ query }}" placeholder="Name or admission number">
+  <button class="btn">Search</button>
+</form>
+<div class="grid cards">
+  {% for student in students %}
+  <a class="card" href="{% url 'results:transcript' student.id %}">
+    <h2>{{ student.full_name }}</h2>
+    <p class="muted">{{ student.admission_number }} · {{ student.get_status_display }}</p>
+  </a>
+  {% empty %}<div class="card">No students found.</div>{% endfor %}
+</div>
+{% endblock %}

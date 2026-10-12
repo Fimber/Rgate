@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block shell %}
+<header class="topbar">
+  <div class="wrap nav-row">
+    <a class="brand" href="{% url 'ops:dashboard' %}">
+      <span class="crest sm">RG</span>
+      <span>ReGate HQ<small>Platform administration</small></span>
+    </a>
+    <div class="top-actions">
+      <a class="btn ghost small" href="{% url 'ops:dashboard' %}">Usage</a>
+      <a class="btn ghost small" href="{% url 'ops:audit' %}">Audit</a>
+      <a class="btn ghost small" href="{% url 'ops:impersonate' %}">Impersonate</a>
+      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="btn small">Sign out</button></form>
+    </div>
+  </div>
+</header>
+<main id="main" class="content">
+  <div class="wrap">
+    {% if messages %}
+      {% for message in messages %}<div class="banner {{ message.tags }}">{{ message }}</div>{% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+{% endblock %}

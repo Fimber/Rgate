@@ -1,0 +1,19 @@
+{# Repeatable class + typed subject rows. Needs: rows, classes, subjects. Driven by static/js/staff-form.js #}
+<div id="teach-rows">
+  {% for row in rows %}
+  <div class="teach-row">
+    <label>Class
+      <select name="teach_class">
+        <option value="">Choose class</option>
+        {% for c in classes %}<option value="{{ c.id }}" {% if c.id == row.class_id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Subject
+      <input name="teach_subject" list="subject-names" value="{{ row.subject }}" maxlength="120" autocomplete="off" placeholder="e.g. Mathematics">
+    </label>
+    <button type="button" class="btn ghost small teach-remove" aria-label="Remove this class and subject">Remove</button>
+  </div>
+  {% endfor %}
+</div>
+<datalist id="subject-names">{% for s in subjects %}<option value="{{ s.name }}">{% endfor %}</datalist>
+<button type="button" class="btn ghost small" id="teach-add">+ Add another class or subject</button>

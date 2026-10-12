@@ -1,0 +1,55 @@
+{% extends "staff_base.html" %}
+{% block title %}Assignments{% endblock %}
+{% block content %}
+<h1>Who teaches what</h1>
+<p class="muted">Teachers only see the class and subject combinations assigned to them.{% if not user.is_school_admin_like %} Only the principal or a school admin can change these.{% endif %}</p>
+{% if user.is_school_admin_like %}
+<div class="grid cards">
+  <form method="post" class="form card">
+    {% csrf_token %}<input type="hidden" name="action" value="subject">
+    <h2>Subject assignment</h2>
+    <label>Teacher<select name="teacher">{% for t in teachers %}<option value="{{ t.id }}">{{ t.get_full_name }} — {{ t.get_role_display }}</option>{% endfor %}</select></label>
+    <label>Class<select name="school_class">{% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></label>
+    <label>Subject
+      <input name="subject_name" list="subject-names" required maxlength="120" autocomplete="off"
+             placeholder="Type the subject, e.g. Further Mathematics">
+      <span class="help">Pick a suggestion or type a new subject; a new one is added to the school's list.</span>
+    </label>
+    <datalist id="subject-names">{% for s in subjects %}<option value="{{ s.name }}">{% endfor %}</datalist>
+    <button class="btn primary" type="submit">Assign</button>
+  </form>
+  <form method="post" class="form card">
+    {% csrf_token %}<input type="hidden" name="action" value="class_teacher">
+    <h2>Class teacher</h2>
+    <label>Teacher<select name="teacher">{% for t in teachers %}<option value="{{ t.id }}">{{ t.get_full_name }} — {{ t.get_role_display }}</option>{% endfor %}</select></label>
+    <label>Class<select name="school_class">{% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></label>
+    <button class="btn primary" type="submit">Assign</button>
+  </form>
+</div>
+{% endif %}
+<div class="card table-wrap" style="margin-top:12px">
+  <table>
+    <thead><tr><th>Teacher</th><th>Subject</th><th>Class</th>{% if user.is_school_admin_like %}<th></th>{% endif %}</tr></thead>
+    <tbody>
+      {% for a in subject_assignments %}
+      <tr>
+        <td>{{ a.teacher.get_full_name }}</td><td>{{ a.subject }}</td><td>{{ a.school_class }}</td>
+        {% if user.is_school_admin_like %}
+        <td>
+          <form method="post" onsubmit="return confirm('Remove {{ a.subject|escapejs }} from {{ a.teacher.get_full_name|escapejs }}? Scores already entered are kept.')">
+            {% csrf_token %}<input type="hidden" name="action" value="remove_subject"><input type="hidden" name="assignment" value="{{ a.id }}">
+            <button class="btn ghost small" type="submit">Remove</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="muted">No subjects assigned yet this term.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:12px">Class teachers:
+    {% for a in class_teachers %}{{ a.school_class }} — {{ a.teacher.get_full_name }}{% if not forloop.last %}; {% endif %}{% empty %}none{% endfor %}
+  </p>
+</div>
+{% endblock %}

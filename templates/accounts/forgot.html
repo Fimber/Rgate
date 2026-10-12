@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forgot password · ReGate</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="{% static 'css/signin.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <aside class="aside">
+    <a href="{% url 'accounts:landing' %}" class="mark" style="color:var(--brand-ink); text-decoration:none"><span class="crest">RG</span> <b>ReGate</b></a>
+    <div>
+      <h1>Reset sits with your school.</h1>
+      <p class="hide-sm">We do not email a link until your administrator has confirmed you. That keeps student records off a public reset form.</p>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="form">
+      <h3>Forgot password</h3>
+      <p class="muted">Ask your school office to confirm the phone number on your child's record. If you are staff, your administrator can reset your password from the staff list.</p>
+      <p><a class="btn" href="{% if current_school %}{% url 'school_login' %}{% else %}{% url 'accounts:login' %}{% endif %}">Back to sign in</a></p>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · ReGate</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#143A2B">
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <aside class="aside">
+    <a href="{% url 'accounts:landing' %}" class="mark" style="color:var(--brand-ink);text-decoration:none"><span class="crest">RG</span> <b>ReGate</b></a>
+    <div>
+      <h1>Privacy and data protection</h1>
+      <p class="hide-sm">Your school is the controller. ReGate is the processor.</p>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="form">
+      <h3>How we handle school data</h3>
+      <p class="muted">ReGate processes student, parent and staff data as a processor. The school is the controller under the Nigeria Data Protection Act.</p>
+      <p class="muted">Data is used to compute, publish and retain academic results. Access is role-scoped. Student identifiers are not placed in public URLs except the opaque result verification code.</p>
+      <p class="muted">Results are retained permanently while the school remains a customer, because historical transcripts are a core service. If a school stops paying: read-only access, Excel and PDF export on request, then a 90-day deletion notice.</p>
+      <p class="muted">A breach affecting personal data will be notified to the school so it can notify affected persons as required by law.</p>
+      <p><a class="btn" href="{% url 'accounts:landing' %}">Back to ReGate</a></p>
+    </div>
+  </main>
+</div>
+</body>
+</html>

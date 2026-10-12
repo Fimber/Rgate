@@ -1,0 +1,27 @@
+{% extends "staff_base.html" %}
+{% block title %}Transcript · {{ student.full_name }}{% endblock %}
+{% block content %}
+<article class="result-card">
+  <header class="result-head">
+    <div class="mark">{{ school.name|slice:":3"|upper }}</div>
+    <div>
+      <h1>{{ school.name }} official transcript</h1>
+      <p>{{ student.full_name }} · {{ student.admission_number }}</p>
+    </div>
+  </header>
+  <div class="result-body">
+    {% for sheet in sheets %}
+      <h2>{{ sheet.term.session.name }} {{ sheet.term.name }} term · {{ sheet.enrollment.school_class }}</h2>
+      <p>Average {{ sheet.average }}{% if school.show_positions %} · Position {{ sheet.position_class }}{% endif %} · {{ sheet.get_promotion_status_display }}</p>
+      <ul>
+        {% for sr in sheet.subject_results.all %}
+        <li>{{ sr.subject.name }} — {{ sr.total }} {{ sr.grade }} {{ sr.remark }}</li>
+        {% endfor %}
+      </ul>
+    {% empty %}
+      <p>No published terms yet. Transcripts are built from published snapshots only.</p>
+    {% endfor %}
+    <p class="result-meta">Watermarked school copy. Verify each term result from its result ID.</p>
+  </div>
+</article>
+{% endblock %}

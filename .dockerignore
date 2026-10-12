@@ -1,0 +1,13 @@
+.venv
+.git
+.github
+**/__pycache__
+*.py[cod]
+db.sqlite3
+media
+staticfiles
+.env
+_tmp_ui
+design_refs
+capture_artifact.py
+.coverage

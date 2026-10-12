@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block shell %}
+<header class="topbar">
+  <div class="wrap nav-row">
+    <a class="brand" href="{% url 'schools:dashboard' %}">
+      <span class="crest sm">{% if current_school %}{{ current_school.name|slice:":3"|upper }}{% else %}RG{% endif %}</span>
+      <span>
+        {{ current_school.name|default:"ReGate" }}
+        <small>{% if current_school.current_term %}{{ current_school.current_session.name }} · {{ current_school.current_term.name }} term{% else %}Overview{% endif %}</small>
+      </span>
+    </a>
+    <div class="top-actions">
+      <span class="chip">{{ request.user.get_full_name }}</span>
+      <form method="post" action="{% url 'school_logout' %}">{% csrf_token %}<button class="btn ghost small">Sign out</button></form>
+    </div>
+  </div>
+</header>
+<div class="layout">
+  <nav class="sidenav">
+    <div class="label">Work</div>
+    <a href="{% url 'schools:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Overview</a>
+    <a href="{% url 'results:score_home' %}" class="{% if request.resolver_match.url_name == 'score_home' or request.resolver_match.url_name == 'score_entry' %}active{% endif %}">Score entry</a>
+    {% if not user.is_school_admin_like %}<a href="{% url 'records:my_classes' %}" class="{% if request.resolver_match.url_name == 'my_classes' %}active{% endif %}">My classes</a>{% endif %}
+    <a href="{% url 'results:progress' %}" class="{% if request.resolver_match.url_name == 'progress' or request.resolver_match.url_name == 'review' %}active{% endif %}">Approvals</a>
+    <a href="{% url 'results:publish' %}" class="{% if request.resolver_match.url_name == 'publish' %}active{% endif %}">Publish</a>
+    <a href="{% url 'results:transcripts' %}" class="{% if request.resolver_match.url_name == 'transcripts' or request.resolver_match.url_name == 'transcript' %}active{% endif %}">Transcript</a>
+    <div class="label">School</div>
+    <a href="{% url 'records:students' %}" class="{% if request.resolver_match.app_name == 'records' and request.resolver_match.url_name != 'staff' and request.resolver_match.url_name != 'assignments' %}active{% endif %}">Students</a>
+    <a href="{% url 'records:staff' %}" class="{% if request.resolver_match.url_name == 'staff' %}active{% endif %}">Staff</a>
+    <a href="{% url 'records:assignments' %}" class="{% if request.resolver_match.url_name == 'assignments' %}active{% endif %}">Assignments</a>
+    {% if user.is_school_admin_like %}
+    {% if current_school.charges_fees %}<a href="{% url 'portal:fees' %}" class="{% if request.resolver_match.url_name == 'fees' %}active{% endif %}">Fees</a>{% endif %}
+    <a href="{% url 'portal:pins' %}" class="{% if request.resolver_match.url_name == 'pins' %}active{% endif %}">Result PINs</a>
+    <a href="{% url 'schools:structure' %}" class="{% if request.resolver_match.url_name == 'structure' %}active{% endif %}">Structure</a>
+    <a href="{% url 'schools:settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}active{% endif %}">Settings</a>
+    <a href="{% url 'schools:wizard' %}" class="{% if request.resolver_match.url_name == 'wizard' %}active{% endif %}">Setup wizard</a>
+    {% endif %}
+  </nav>
+  <main id="main" class="content">
+    <div class="wrap">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="banner {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+<nav class="bottomnav">
+  <a href="{% url 'schools:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Home</a>
+  <a href="{% url 'results:score_home' %}" class="{% if request.resolver_match.url_name == 'score_home' or request.resolver_match.url_name == 'score_entry' %}active{% endif %}">Scores</a>
+  <a href="{% url 'results:progress' %}" class="{% if request.resolver_match.url_name == 'progress' %}active{% endif %}">Approve</a>
+  <a href="{% url 'records:students' %}" class="{% if request.resolver_match.app_name == 'records' %}active{% endif %}">Students</a>
+  <a href="{% url 'results:publish' %}" class="{% if request.resolver_match.url_name == 'publish' %}active{% endif %}">Publish</a>
+</nav>
+{% endblock %}

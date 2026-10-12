@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% block shell %}
+<header class="topbar">
+  <div class="wrap nav-row">
+    <a class="brand" href="{% url 'portal:home' %}">
+      <span class="crest sm">{% if current_school %}{{ current_school.name|slice:":3"|upper }}{% else %}RG{% endif %}</span>
+      <span>{{ current_school.name|default:"ReGate" }}<small>Parent portal</small></span>
+    </a>
+    <div class="top-actions">
+      {% if user.is_authenticated %}
+        <form method="post" action="{% if current_school %}{% url 'school_logout' %}{% else %}{% url 'accounts:logout' %}{% endif %}">{% csrf_token %}<button class="btn ghost small">Sign out</button></form>
+      {% else %}
+        <a class="btn ghost small" href="{% if current_school %}{% url 'school_login' %}{% else %}{% url 'accounts:login' %}{% endif %}">Sign in</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+<main id="main" class="content">
+  <div class="wrap">
+    {% if messages %}
+      {% for message in messages %}<div class="banner {{ message.tags }}">{{ message }}</div>{% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+{% endblock %}

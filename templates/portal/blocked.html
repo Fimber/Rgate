@@ -1,0 +1,10 @@
+{% extends "portal_base.html" %}
+{% block title %}Result withheld{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Result withheld</h1>
+  <p>{{ school.owing_message }}</p>
+  <p>{{ school.bursary_contact }}</p>
+  <p class="muted">{{ student.full_name }} · {{ student.admission_number }}</p>
+</div>
+{% endblock %}

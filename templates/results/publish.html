@@ -1,0 +1,38 @@
+{% extends "staff_base.html" %}
+{% block title %}Publish{% endblock %}
+{% block content %}
+<h1>Publish results</h1>
+<p class="muted">Publishing stores the computed snapshot, generates the PDF, and can send one SMS per child. Incomplete results block the action.</p>
+{% if incompletes %}
+  <div class="banner warning">
+    Incomplete and not yet publishable:
+    {% for sheet in incompletes %}{{ sheet.enrollment.student.full_name }} ({{ sheet.enrollment.school_class }}){% if not forloop.last %}; {% endif %}{% endfor %}
+  </div>
+{% endif %}
+<form method="post" class="form card">
+  {% csrf_token %}
+  <label>Scope
+    <select name="scope">
+      <option value="school">Whole school</option>
+      <option value="class">One class</option>
+    </select>
+  </label>
+  <label>Class
+    <select name="school_class">
+      {% for c in classes %}<option value="{{ c.id }}">{{ c.name }} · {{ cycles|default_if_none:'' }}</option>{% endfor %}
+    </select>
+  </label>
+  <label><input type="checkbox" name="sms" checked style="width:auto;min-height:auto"> Send parent SMS</label>
+  <button class="btn primary" type="submit">Publish</button>
+</form>
+<div class="card table-wrap" style="margin-top:12px">
+  <table>
+    <thead><tr><th>Class</th><th>State</th></tr></thead>
+    <tbody>
+      {% for c in classes %}
+      <tr><td>{{ c.name }}</td><td>{% for id, cycle in cycles.items %}{% if id == c.id %}{{ cycle.get_state_display }}{% endif %}{% empty %}Draft{% endfor %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

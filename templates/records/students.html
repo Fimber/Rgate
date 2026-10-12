@@ -1,0 +1,35 @@
+{% extends "staff_base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Students</h1>
+  <p class="muted">Enrollment is per session and term, not a permanent class. That is what makes transcripts correct.</p>
+</div>
+<form class="card toolbar" method="get">
+  <input name="q" type="search" value="{{ query }}" placeholder="Name or admission number" aria-label="Search students">
+  <button class="btn" type="submit">Search</button>
+  {% if user.is_school_admin_like %}
+  <a class="btn" href="{% url 'records:student_new' %}">Add student</a>
+  <a class="btn ghost" href="{% url 'records:student_import' %}">Import Excel</a>
+  {% endif %}
+</form>
+{% if user.is_school_admin_like %}
+<form method="post" action="{% url 'records:carry_enrollments' %}" style="margin-bottom:12px">{% csrf_token %}<button class="btn ghost">Enroll active students into current term</button></form>
+{% endif %}
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>Adm</th><th>Name</th><th>Parent</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td>{{ student.admission_number }}</td>
+        <td>{{ student.full_name }}</td>
+        <td>{{ student.parent_name }}<br><span class="muted">{{ student.parent_phone }}</span></td>
+        <td>{{ student.get_status_display }}</td>
+         <td>{% if user.is_school_admin_like %}<a href="{% url 'records:student_edit' student.id %}">Edit</a> · {% endif %}<a href="{% url 'results:transcript' student.id %}">Transcript</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="5">No students yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

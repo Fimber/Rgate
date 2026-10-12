@@ -1,0 +1,12 @@
+# Runtime. Ranges are tested; widen them only after the test suite passes.
+Django>=5.2,<5.3          # LTS line
+Pillow>=11.0
+openpyxl>=3.1,<3.2
+fpdf2>=2.8,<2.9           # results/services/pdf.py relies on 2.8 cursor semantics
+python-dotenv>=1.0
+whitenoise>=6.6
+qrcode>=7.4
+
+# Production server and database
+gunicorn>=22.0; sys_platform != "win32"
+psycopg[binary]>=3.2

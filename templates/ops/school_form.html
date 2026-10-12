@@ -1,0 +1,27 @@
+{% extends "ops_base.html" %}
+{% block title %}New school{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Create school</h1>
+  <p class="muted">The admin can sign in with this phone number after you save.</p>
+</div>
+<form method="post" class="form card" style="max-width:520px">
+  {% csrf_token %}
+  <label>School name<input name="name" required></label>
+  <label>School path<input name="slug" placeholder="cssnkpolu"></label>
+  <p class="muted" style="margin:-.4rem 0 1rem">Parents open the school at regate.ng/thatpath. Leave blank and we make one from the name.</p>
+  <label>Address<input name="address"></label>
+  <label>School type
+    <select name="ownership">
+      <option value="private">Private school (charges fees)</option>
+      <option value="government">Government school (no fees)</option>
+    </select>
+  </label>
+  <label>School phone<input name="contact_phone"></label>
+  <label>Admin first name<input name="admin_first"></label>
+  <label>Admin last name<input name="admin_last"></label>
+  <label>Admin phone<input name="admin_phone" required></label>
+  <label>Admin password<input name="admin_password" value="school1234"></label>
+  <button class="btn" type="submit">Create</button>
+</form>
+{% endblock %}
